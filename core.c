@@ -493,7 +493,7 @@ void minsert(map* m, void* key, void* value)
 }
 void mremove(map* m, void* key)
 {
-
+    // TO BE IMPLEMENTED
 }
 int mfindv(map* m, void* key, void* target)
 {
