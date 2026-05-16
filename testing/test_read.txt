@@ -1,0 +1,3 @@
+Hello!
+welcome to core library
+it is a pure C library built to provide dynamic strings, and generic types to make C easier!:)
