@@ -46,6 +46,7 @@ int core_vector_push_back(vector_t* vector, const void* value); // Pushing back 
 int core_vector_pop_back(vector_t* vector); // Decrementing `vector` size by one, returns 1 on success, and 0 on failure
 int core_vector_set(vector_t* vector, const size_t index, const void* value); // Setting vector content at `index` to `value`, returns 1 on success, and 0 on failure
 int core_vector_remove(vector_t* vector, const size_t index); // Removing an element at `index`, returns 1 on success, and 0 on failure
+int core_vector_clear(vector_t* vector); // Clearing all data of `vector`, keeps `capacity` reserved, returns 1 on success, and 0 on failure
 
 void core_vector_foreach(vector_t* vector, void (*function)(const size_t index, void* data)); // Calling `function(const size_t index, void* data)` for each element in vector `data`
 

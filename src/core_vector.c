@@ -118,7 +118,22 @@ int core_vector_remove(vector_t* vector, const size_t index)
         memcpy((void*)((char*)vector->_Vector_Data + (index * vector->_Vector_Element_Size)), (void*)((char*)vector->_Vector_Data + ((vector->_Vector_Size - 1) * vector->_Vector_Element_Size)), vector->_Vector_Element_Size);
 
     vector->_Vector_Size--;
+    return 1;
+}
+int core_vector_clear(vector_t* vector)
+{
+    if (!vector) return 0;
+    if (!vector->_Vector_Data) return 0;
 
+    if (vector->_Vector_Destroy_Function)
+    {
+        for (size_t i = 0; i < vector->_Vector_Size; ++i)
+        {
+            vector->_Vector_Destroy_Function((void*)((char*)vector->_Vector_Data + (i * vector->_Vector_Element_Size)));
+        }
+    }
+
+    vector->_Vector_Size = 0;
     return 1;
 }
 

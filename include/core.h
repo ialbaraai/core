@@ -18,6 +18,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  */
 
+ 
 #ifndef CORE_H
 
 #define CORE_H
@@ -27,8 +28,11 @@
 #include "core_string.h"
 #include "core_vector.h"
 #include "core_map.h"
+#include "core_linkedlist.h" // (TO BE IMPLEMENTED LATER)
+#include "core_file.h" // (TO BE IMPLEMENTED LATER)
 
 // C OOP (TO BE IMPLEMENTED LATER)
+
 #include "core_oop.h"
 
 // BOOL
