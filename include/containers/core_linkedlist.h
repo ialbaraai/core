@@ -1,5 +1,5 @@
 /*
- * core_vector.h - Core Library
+ * core_linkedlist.h - Core Library
  *
  * Copyright (c) 2026 albaraa (ialbaraai)
  *
