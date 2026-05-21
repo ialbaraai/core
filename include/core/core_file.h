@@ -23,7 +23,7 @@
 
 #define CORE_FILE_H
 
-#include "core_vector.h"
+#include "../containers/core_vector.h"
 #include "core_string.h"
 
 typedef struct FILE_STRUCT

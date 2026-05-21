@@ -25,32 +25,22 @@
 
 #include <stddef.h>
 
-typedef enum VISIBILITY_ENUM
-{
-    PUBLIC,
-    PRIVATE
-} visibility_t;
+#include "../core_backend.h"
+#include "../core/core_string.h"
 
-typedef struct ATTRIBUTE_STRUCT
-{
-    void* _Value;
-    size_t _Value_Size;
-    void* _Holder;
-    visibility_t _Visibility;
-} attribute_t;
+// VISIBILITY
+#include "core_oop_visibility.h"
 
-typedef struct METHOD_STRUCT
-{
-    void* _this;
-    void(*_function)(void* this, void* args);
-    visibility_t _Visibility;
-} method_t;
+// MEMBER
+#include "core_oop_member.h"
 
-typedef struct CLASS_STRUCT
-{
-    void* m_Base;
-    method_t m_Method;
-    attribute_t m_Attribute;
-} class_t;
+// METHOD
+#include "core_oop_method.h"
+
+// OBJECT
+#include "core_oop_object.h"
+
+// CLASS
+#include "core_oop_class.h"
 
 #endif

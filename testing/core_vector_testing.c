@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../include/core_vector.h"
-#include "../include/core_string.h"
+#include "../include/containers/core_vector.h"
+#include "../include/core/core_string.h"
 
 // ── helpers for string_t elements ────────────────────────────────────────────
 

@@ -25,15 +25,12 @@
 
 // DATA STRUCTURES
 
-#include "core_string.h"
-#include "core_vector.h"
-#include "core_map.h"
-#include "core_linkedlist.h" // (TO BE IMPLEMENTED LATER)
-#include "core_file.h" // (TO BE IMPLEMENTED LATER)
-
-// C OOP (TO BE IMPLEMENTED LATER)
-
-#include "core_oop.h"
+#include "core/core_string.h"
+#include "containers/core_vector.h"
+#include "containers/core_map.h"
+#include "containers/core_linkedlist.h" // (TO BE IMPLEMENTED LATER)
+#include "core/core_file.h"
+#include "oop/core_oop.h" // (TO BE IMPLEMENTED LATER)
 
 // BOOL
 

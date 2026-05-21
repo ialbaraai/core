@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../include/core_file.h"
+#include "../include/core/core_file.h"
 
 // ── init ──────────────────────────────────────────────────────────────────────
 

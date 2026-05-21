@@ -24,6 +24,7 @@
 #define CORE_VECTOR_H
 
 #include <stddef.h>
+#include "../core_backend.h"
 
 #define VECTOR_MAX_CAPACITY (1024ULL * 1024ULL * 1024ULL)
 
@@ -38,8 +39,8 @@ typedef struct VECTOR_STRUCT
 } vector_t;
 
 // VECTOR INITIALIZATION
-vector_t core_vector_init(const size_t capacity, const size_t element_size, void (*copy_function)(void* destination, const void* source), void(*destroy_function)(void* object)); // Initialize a vector struct with a capacity of `capacity`, element size of `element_size`, copy function callback `void copy_function(void* destination, const void* source)` to decide how to insert values into vector (`NULL` for default), and destroy function callback `void destroy_function(void* object)` to decide how to destroy objects from vector (`NULL` for default)
-vector_t core_vector_init_data(const size_t capacity, const size_t element_size, const size_t count, void (*copy_function)(void* destination, const void* source), void (*destroy_function)(void* object), const void* data); // Initialize a vector struct with a capacity of `capacity`, element size of `element_size`, copy function callback `void copy_function(void* destination, const void* source)` to decide how to insert values into vector (`NULL` for default), destroy function callback `void destroy_function(void* object)` to decide how to destroy objects from vector (`NULL` for default), and data of `data`, copies `count` amount of elements from `data`
+vector_t core_vector_init(const size_t capacity, const size_t element_size, copy_function_t copy_function, destroy_function_t destroy_function); // Initialize a vector struct with a capacity of `capacity`, element size of `element_size`, copy function callback `void copy_function(void* destination, const void* source)` to decide how to insert values into vector (`NULL` for default), and destroy function callback `void destroy_function(void* object)` to decide how to destroy objects from vector (`NULL` for default)
+vector_t core_vector_init_data(const size_t capacity, const size_t element_size, const size_t count, copy_function_t copy_function, destroy_function_t destroy_function, const void* data); // Initialize a vector struct with a capacity of `capacity`, element size of `element_size`, copy function callback `void copy_function(void* destination, const void* source)` to decide how to insert values into vector (`NULL` for default), destroy function callback `void destroy_function(void* object)` to decide how to destroy objects from vector (`NULL` for default), and data of `data`, copies `count` amount of elements from `data`
 
 // VECTOR MANIPULATION
 int core_vector_push_back(vector_t* vector, const void* value); // Pushing back an element with the value of `value` to `vector` through `copy_function` if assigned, returns 1 on success, and 0 on failure
