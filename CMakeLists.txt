@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(core C)
 
-set_target_properties(core PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
-
 add_library(core STATIC
     src/core/core_string.c
     src/containers/core_vector.c
@@ -14,5 +12,7 @@ add_library(core STATIC
     # src/containers/core_linkedlist.c
     src/core/core_file.c
 )
+
+set_target_properties(core PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
 
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
