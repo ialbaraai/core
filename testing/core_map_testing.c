@@ -12,26 +12,6 @@ static int compare_int(const void* a, const void* b)
     return *(const int*)a - *(const int*)b;
 }
 
-static int compare_str(const void* a, const void* b)
-{
-    return strcmp(core_string_get_data((const string_t*)a),
-                  core_string_get_data((const string_t*)b));
-}
-
-// ── copy/destroy helpers for string_t ────────────────────────────────────────
-
-static void copy_str(void* dst, const void* src)
-{
-    const string_t* s = (const string_t*)src;
-    string_t copy = core_string_init_data(core_string_get_capacity(s), core_string_get_data(s));
-    memcpy(dst, &copy, sizeof(string_t));
-}
-
-static void destroy_str(void* obj)
-{
-    core_string_destroy((string_t*)obj);
-}
-
 // ── init ──────────────────────────────────────────────────────────────────────
 
 void test_init(void)
@@ -85,7 +65,7 @@ void test_push_back_grows(void)
 void test_push_back_string_keys_and_values(void)
 {
     map_t m = core_map_init(4, sizeof(string_t), sizeof(string_t),
-                            copy_str, destroy_str, copy_str, destroy_str, compare_str);
+                            core_string_copy_callback, core_string_destroy_callback, core_string_copy_callback, core_string_destroy_callback, core_string_compare_callback);
 
     const char* pairs[][2] = {{"name", "Albaraa"}, {"lang", "C"}, {"proj", "AlgoLab"}};
 
@@ -150,7 +130,7 @@ void test_set_missing_key(void)
 void test_set_string_value_destroys_old(void)
 {
     map_t m = core_map_init(4, sizeof(int), sizeof(string_t),
-                            NULL, NULL, copy_str, destroy_str, compare_int);
+                            NULL, NULL, core_string_copy_callback, core_string_destroy_callback, compare_int);
     int k = 1;
     string_t old_v = core_string_init_data(16, "old");
     string_t new_v = core_string_init_data(16, "new");
@@ -210,7 +190,7 @@ void test_remove_last_element(void)
 void test_remove_string_pair(void)
 {
     map_t m = core_map_init(4, sizeof(string_t), sizeof(string_t),
-                            copy_str, destroy_str, copy_str, destroy_str, compare_str);
+                            core_string_copy_callback, core_string_destroy_callback, core_string_copy_callback, core_string_destroy_callback, core_string_compare_callback);
 
     string_t k = core_string_init_data(16, "key");
     string_t v = core_string_init_data(16, "val");

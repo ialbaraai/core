@@ -5,20 +5,6 @@
 #include "../include/containers/core_vector.h"
 #include "../include/core/core_string.h"
 
-// ── helpers for string_t elements ────────────────────────────────────────────
-
-static void copy_str(void* dst, const void* src)
-{
-    const string_t* s = (const string_t*)src;
-    string_t copy = core_string_init_data(core_string_get_capacity(s), core_string_get_data(s));
-    memcpy(dst, &copy, sizeof(string_t));
-}
-
-static void destroy_str(void* obj)
-{
-    core_string_destroy((string_t*)obj);
-}
-
 // ── init ──────────────────────────────────────────────────────────────────────
 
 void test_init(void)
@@ -70,7 +56,7 @@ void test_push_back_grows(void)
 
 void test_push_back_strings(void)
 {
-    vector_t v = core_vector_init(4, sizeof(string_t), copy_str, destroy_str);
+    vector_t v = core_vector_init(4, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
     const char* words[] = {"alpha", "beta", "gamma"};
 
     for (int i = 0; i < 3; ++i)
@@ -102,11 +88,11 @@ void test_pop_back(void)
 
 void test_pop_back_calls_destroy(void)
 {
-    vector_t v = core_vector_init(4, sizeof(string_t), copy_str, destroy_str);
+    vector_t v = core_vector_init(4, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
     string_t s = core_string_init_data(16, "test");
     core_vector_push_back(&v, &s);
     core_string_destroy(&s);
-    assert(core_vector_pop_back(&v) == 1); // should call destroy_str without crashing
+    assert(core_vector_pop_back(&v) == 1); // should call core_string_destroy_callback without crashing
     assert(core_vector_get_size(&v) == 0);
     core_vector_destroy(&v);
 }
@@ -126,7 +112,7 @@ void test_set(void)
 
 void test_set_strings_destroys_old(void)
 {
-    vector_t v = core_vector_init(4, sizeof(string_t), copy_str, destroy_str);
+    vector_t v = core_vector_init(4, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
     string_t a = core_string_init_data(16, "old");
     string_t b = core_string_init_data(16, "new");
     core_vector_push_back(&v, &a);

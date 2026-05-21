@@ -33,7 +33,7 @@ core_vector_destroy(&v);
 ```
 ```c
 // heap-owning types — provide copy and destroy hooks
-vector_t v = core_vector_init(8, sizeof(string_t), copy_str, destroy_str);
+vector_t v = core_vector_init(8, sizeof(string_t), core_string_copy_callback /*built-in core string copy callback*/, core_string_destroy_callback /*built-in core string destroy callback*/);
 string_t s = core_string_init_data(32, "hello");
 core_vector_push_back(&v, &s);
 core_string_destroy(&s); // safe — vector holds its own deep copy
@@ -52,9 +52,9 @@ core_map_destroy(&m);
 ```c
 // heap-owning types
 map_t m = core_map_init(8, sizeof(string_t), sizeof(string_t),
-                        copy_str, destroy_str,
-                        copy_str, destroy_str,
-                        compare_str);
+                        core_string_copy_callback, core_string_destroy_callback,
+                        core_string_copy_callback, core_string_destroy_callback,
+                        core_string_compare_callback /*built-in core string compare callback*/);
 string_t key = core_string_init_data(32, "name");
 string_t val = core_string_init_data(32, "Albaraa");
 core_map_push_back(&m, &key, &val);

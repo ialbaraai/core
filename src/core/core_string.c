@@ -338,3 +338,33 @@ void core_string_destroy(string_t* string)
     string->_String_Capacity = 0;
     string->_String_Size = 0;
 }
+
+void core_string_copy_callback(void* destination, const void* source)
+{
+    if ((string_t*)source)
+    {
+        const string_t* s = (const string_t*)source;
+
+        string_t copy = core_string_init_data(core_string_get_capacity(s), core_string_get_data(s));
+
+        memcpy(destination, &copy, sizeof(string_t));
+    }
+}
+void core_string_destroy_callback(void* object)
+{
+    if ((string_t*)object)
+    {
+        core_string_destroy((string_t*)object);
+    }
+}
+int core_string_compare_callback(const void* first, const void* second)
+{
+    if ((string_t*)first && (string_t*)second)
+    {
+        int res = core_string_compare((string_t*)first, (string_t*)second);
+
+        if (res == 1) return 0;
+    }
+
+    return 1;
+}

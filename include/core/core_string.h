@@ -68,4 +68,9 @@ void core_string_replace(string_t* string, const char oldc, const char newc); //
 // STRING DESTRUCTOR
 void core_string_destroy(string_t* string); // Free `string` allocated `data` memory and clear its data
 
+// STRING CALLBACKS
+void core_string_copy_callback(void* destination, const void* source); // Callback to `core_string_copy(string_t* destination, const string_t* source)`, used for `vector`/`map`/`oop` copy function
+void core_string_destroy_callback(void* object); // Callback to `core_string_destroy(string_t* string)`, used for `vector`/`map`/`oop` destroy function
+int core_string_compare_callback(const void* first, const void* second); // Callback to `core_string_compare(const string_t* first, const string_t* second)`, used for `map` compare function
+
 #endif
