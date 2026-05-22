@@ -3,6 +3,7 @@
 #define CORE_OOP_MEMBER_H
 
 #include "core_oop_visibility.h"
+#include "core_oop_types.h"
 #include "../core/core_string.h"
 #include "../core_backend.h"
 

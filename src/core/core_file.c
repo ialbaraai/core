@@ -49,8 +49,7 @@ int core_file_read(file_t* file)
         if (curchar == '\n')
         {
             core_vector_push_back(&file->_File_Data, &curstr);
-            core_string_destroy(&curstr);
-            curstr = core_string_init(file->_File_Initial_Line_Size);
+            core_string_set(&curstr, "");
         }
         else
         {

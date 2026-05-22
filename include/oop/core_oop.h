@@ -25,9 +25,6 @@
 
 #include <stddef.h>
 
-#include "../core_backend.h"
-#include "../core/core_string.h"
-
 // VISIBILITY
 #include "core_oop_visibility.h"
 

@@ -5,10 +5,10 @@ add_library(core STATIC
     src/core/core_string.c
     src/containers/core_vector.c
     src/containers/core_map.c
-    # src/oop/core_oop_class.c
-    # src/oop/core_oop_object.c
-    # src/oop/core_oop_method.c
-    # src/oop/core_oop_member.c
+    src/oop/core_oop_class.c
+    src/oop/core_oop_object.c
+    src/oop/core_oop_method.c
+    src/oop/core_oop_member.c
     # src/containers/core_linkedlist.c
     src/core/core_file.c
 )

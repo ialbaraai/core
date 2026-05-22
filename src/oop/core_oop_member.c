@@ -5,7 +5,7 @@
 
 member_t core_member_init(const char* name, const void* holder, const size_t value_size, const visibility_t visibility, copy_function_t copy_function, destroy_function_t destroy_function)
 {
-    member_t member = {._Member_Name = core_string_init_data(strlen(name) + 8, name), ._Member_Holder = holder, ._Member_Value_Size = value_size,._Member_Visibility = visibility,._Member_Value = malloc(value_size)};
+    member_t member = {._Member_Name = core_string_init_data(strlen(name) + 1, name), ._Member_Holder = holder, ._Member_Value_Size = value_size,._Member_Visibility = visibility,._Member_Value = malloc(value_size)};
 
     if (!member._Member_Value)
     {

@@ -22,6 +22,10 @@ printf("%s\n", core_string_get_data(&s));
 core_string_destroy(&s);
 core_string_destroy(&s2);
 ```
+```bash
+# Expected output:
+ How are you?
+```
 ### vector_t
 ```c
 // primitive types — no copy/destroy needed
