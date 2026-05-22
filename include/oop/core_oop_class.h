@@ -24,7 +24,7 @@ typedef struct CLASS_STRUCT
 } class_t;
 
 // CLASS INITIALIZER
-class_t core_class_init(const char* name, const class_t* base_class, member_t* static_members, size_t static_members_size, method_t* static_methods, size_t static_methods_size, object_t(*constructor)(int argc, void** argv), void(*destructor)(object_t* object));
+class_t core_class_init(const char* name, const class_t* base_class, size_t static_members_size, member_t* static_members, size_t static_methods_size, method_t* static_methods, object_t(*constructor)(int argc, void** argv), void(*destructor)(object_t* object));
 
 // CLASS MANIPULATION
 int core_class_call(class_t* class, const char* method_name, int argc, void** argv);

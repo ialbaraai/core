@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-class_t core_class_init(const char* name, const class_t* base_class, member_t* static_members, size_t static_members_size, method_t* static_methods, size_t static_methods_size, object_t(*constructor)(int argc, void** argv), void(*destructor)(object_t* object))
+class_t core_class_init(const char* name, const class_t* base_class, size_t static_members_size, member_t* static_members, size_t static_methods_size, method_t* static_methods, object_t(*constructor)(int argc, void** argv), void(*destructor)(object_t* object))
 {
     class_t class = {._Class_Name = core_string_init_data(strlen(name) + 1, name), ._Class_Base_Class = base_class, ._Class_Static_Members_Size = static_members_size, ._Class_Static_Methods_Size = static_methods_size, .constructor = constructor, .destructor = destructor};
 
