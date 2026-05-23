@@ -8,6 +8,7 @@ A lightweight, generic data structures and OOP library written in pure C. Suppor
 - `vector_t` — generic dynamic array with optional deep copy and destroy hooks
 - `map_t` — generic key-value store with type-erased keys and values
 - `file_t` — file reader and writer built on `string_t` and `vector_t`
+- `class_t` & `object_t` — basic object-oriented programming in C
 
 ## Building
 
