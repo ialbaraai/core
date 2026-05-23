@@ -24,8 +24,21 @@ vector_t core_vector_init_data(const size_t capacity, const size_t element_size,
 
     if (vector._Vector_Data)
     {
-        memcpy(vector._Vector_Data, data, count * element_size);
-        vector._Vector_Size = count;
+        size_t actual_count = count > capacity ? capacity : count;
+
+        if (vector._Vector_Copy_Function)
+        {
+            for (size_t  i = 0; i < actual_count; ++i)
+            {
+                vector._Vector_Copy_Function((void*)((char*)vector._Vector_Data + (i * element_size)), (void*)((char*)data + (i * element_size)));
+            }
+        }
+        else
+        {
+            memcpy(vector._Vector_Data, data, actual_count * element_size);
+        }
+
+        vector._Vector_Size = actual_count;
     }
 
     return vector;

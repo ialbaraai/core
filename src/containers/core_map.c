@@ -26,10 +26,33 @@ map_t core_map_init_data(const size_t capacity, const size_t key_size, const siz
 
     if (map._Map_Key_Data && map._Map_Value_Data)
     {
-        memcpy(map._Map_Key_Data, key_data, count * key_size);
-        memcpy(map._Map_Value_Data, value_data, count * value_size);
+        size_t actual_count = count > capacity ? capacity : count;
 
-        map._Map_Size = count;
+        if (map._Map_Key_Copy_Function)
+        {
+            for (size_t i = 0; i < actual_count; ++i)
+            {
+                map._Map_Key_Copy_Function((void*)((char*)map._Map_Key_Data + (i * key_size)), (void*)((char*)key_data + (i * key_size)));
+            }
+        }
+        else
+        {
+            memcpy(map._Map_Key_Data, key_data, actual_count * key_size);
+        }
+        
+        if (map._Map_Value_Copy_Function)
+        {
+            for (size_t  i = 0; i < actual_count; ++i)
+            {
+                map._Map_Value_Copy_Function((void*)((char*)map._Map_Value_Data + (i * value_size)), (void*)((char*)value_data + (i * value_size)));
+            }
+        }
+        else
+        {
+            memcpy(map._Map_Value_Data, value_data, actual_count * value_size);
+        }
+
+        map._Map_Size = actual_count;
     }
 
     return map;
@@ -48,11 +71,21 @@ int core_map_push_back(map_t* map, const void* key, const void* value)
         if (newcapacity > MAP_MAX_CAPACITY) return 0;
 
         void* keytemp = realloc(map->_Map_Key_Data, newcapacity * map->_Map_Key_Element_Size);
-        void* valuetemp = realloc(map->_Map_Value_Data, newcapacity * map->_Map_Value_Element_Size);
 
-        if (!keytemp || ! valuetemp) return 0;
+        if (!keytemp)
+        {
+            return 0;
+        }
 
         map->_Map_Key_Data = keytemp;
+
+        void* valuetemp = realloc(map->_Map_Value_Data, newcapacity * map->_Map_Value_Element_Size);
+
+        if (!valuetemp)
+        {
+            return 0;
+        }
+
         map->_Map_Value_Data = valuetemp;
         map->_Map_Capacity = newcapacity;
     }
@@ -165,23 +198,8 @@ int core_map_remove(map_t* map, const void* key)
 
     if (index != map->_Map_Size - 1)
     {
-        if (map->_Map_Key_Copy_Function)
-        {
-            map->_Map_Key_Copy_Function((void*)((char*)map->_Map_Key_Data + (index * map->_Map_Key_Element_Size)), (void*)((char*)map->_Map_Key_Data + ((map->_Map_Size - 1) * map->_Map_Key_Element_Size)));
-        }
-        else
-        {
-            memcpy((void*)((char*)map->_Map_Key_Data + (index * map->_Map_Key_Element_Size)), (void*)((char*)map->_Map_Key_Data + ((map->_Map_Size - 1) * map->_Map_Key_Element_Size)), map->_Map_Key_Element_Size);
-        }
-
-        if (map->_Map_Value_Copy_Function)
-        {
-            map->_Map_Value_Copy_Function((void*)((char*)map->_Map_Value_Data + (index * map->_Map_Value_Element_Size)), (void*)((char*)map->_Map_Value_Data + ((map->_Map_Size - 1) * map->_Map_Value_Element_Size)));
-        }
-        else
-        {
-            memcpy((void*)((char*)map->_Map_Value_Data + (index * map->_Map_Value_Element_Size)), (void*)((char*)map->_Map_Value_Data + ((map->_Map_Size - 1) * map->_Map_Value_Element_Size)), map->_Map_Value_Element_Size);
-        }
+        memcpy((void*)((char*)map->_Map_Key_Data + (index * map->_Map_Key_Element_Size)), (void*)((char*)map->_Map_Key_Data + ((map->_Map_Size - 1) * map->_Map_Key_Element_Size)), map->_Map_Key_Element_Size);
+        memcpy((void*)((char*)map->_Map_Value_Data + (index * map->_Map_Value_Element_Size)), (void*)((char*)map->_Map_Value_Data + ((map->_Map_Size - 1) * map->_Map_Value_Element_Size)), map->_Map_Value_Element_Size);
     }
 
     map->_Map_Size--;
