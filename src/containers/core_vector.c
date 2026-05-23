@@ -236,3 +236,22 @@ void core_vector_destroy(vector_t* vector)
     vector->_Vector_Copy_Function = NULL;
     vector->_Vector_Destroy_Function = NULL;
 }
+
+void core_vector_copy_callback(void* destination, const void* source)
+{
+    if ((vector_t*)source)
+    {
+        const vector_t* src = (vector_t*)source;
+
+        vector_t copy = core_vector_init_data(core_vector_get_capacity(src), core_vector_get_element_size(src), core_vector_get_size(src), src->_Vector_Copy_Function, src->_Vector_Destroy_Function, core_vector_get_data(src));
+    
+        memcpy(destination, &copy, sizeof(vector_t));
+    }
+}
+void core_vector_destroy_callback(void* object)
+{
+    if ((vector_t*)object)
+    {
+        core_vector_destroy((vector_t*)object);
+    }
+}

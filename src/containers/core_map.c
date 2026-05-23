@@ -371,3 +371,22 @@ void core_map_destroy(map_t* map)
     map->_Map_Value_Copy_Function = NULL;
     map->_Map_Value_Destroy_Function = NULL;
 }
+
+void core_map_copy_callback(void* destination, const void* source)
+{
+    if ((map_t*)source)
+    {
+        const map_t* src = (map_t*)source;
+
+        map_t copy = core_map_init_data(core_map_get_capacity(src), core_map_get_key_size(src), core_map_get_value_size(src), core_map_get_size(src), src->_Map_Key_Copy_Function, src->_Map_Key_Destroy_Function, src->_Map_Value_Copy_Function, src->_Map_Value_Destroy_Function, src->_Map_Compare_Function, core_map_get_key_data(src), core_map_get_value_data(src));
+
+        memcpy(destination, &copy, sizeof(map_t));
+    }
+}
+void core_map_destroy_callback(void* object)
+{
+    if ((map_t*)object)
+    {
+        core_map_destroy((map_t*)object);
+    }
+}

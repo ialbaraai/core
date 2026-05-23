@@ -66,4 +66,8 @@ void* core_vector_get(const vector_t* vector, const size_t index); // Returning 
 // VECTOR DESTRUCTOR
 void core_vector_destroy(vector_t* vector); // Free `vector` allocated `data` memory through `destroy_function` if assigned and clear its data
 
+// VECTOR CALLBACKS
+void core_vector_copy_callback(void* destination, const void* source); // Callback to deep-copy vectro from `source` to `destination`, used for `vector`/`map`/`oop` copy function
+void core_vector_destroy_callback(void* object); // Callback to `core_vector_destroy(vector_t* vector)`, used for `vector`/`map`/`oop` destroy function
+
 #endif

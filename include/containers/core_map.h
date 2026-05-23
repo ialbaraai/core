@@ -75,4 +75,8 @@ void* core_map_get_value(const map_t* map, const void* key); // Returning the va
 // MAP DESTRUCTOR
 void core_map_destroy(map_t* map); // Free `map` allocated `key data` and `value data` memory through `key_destroy_function` and `value_destroy_function` if assigned and clear its data
 
+// MAP CALLBACKS
+void core_map_copy_callback(void* destination, const void* source); // Callback to deep-copy map from `source` to `destination`, used for `vector`/`map`/`oop` copy function
+void core_map_destroy_callback(void* object); // Callback to `core_map_destroy(map_t* map)`, used for `vector`/`map`/`oop` destroy function
+
 #endif

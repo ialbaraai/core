@@ -343,9 +343,9 @@ void core_string_copy_callback(void* destination, const void* source)
 {
     if ((string_t*)source)
     {
-        const string_t* s = (const string_t*)source;
+        const string_t* src = (const string_t*)source;
 
-        string_t copy = core_string_init_data(core_string_get_capacity(s), core_string_get_data(s));
+        string_t copy = core_string_init_data(core_string_get_capacity(src), core_string_get_data(src));
 
         memcpy(destination, &copy, sizeof(string_t));
     }
