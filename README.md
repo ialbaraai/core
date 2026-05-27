@@ -140,7 +140,8 @@ method_t m = core_method_init("Speak", speak, PUBLIC);
 class_t c = core_class_init("Dog", NULL, 0, NULL, 0, NULL, NULL, NULL); // Initialize a class with STATIC members & methods
 
 // 4. Create an Object (Instance)
-// object_t Object_Name = core_object_init(Class pointer, Object name, Number of instance members, Pointer to instance members, Number of instance methods, Pointer to instance methods);
+// object_t Object_Name = core_object_init(Class pointer, Object name, Number of instance members, Pointer to instance members, Number of instance methods, Pointer to instance methods); (If no class constructor method)
+// Object_t Object_Name = Class.constructor(Number of arguments, Constructor arguments); (If `Class` has constructor method, must call `Class.destructor(&Object_Name)` for destructor)
 object_t o = core_object_init(&c, "Fido", 0, NULL, 1, &m); // Initialize an object with INSTANCE members & methods
 
 // 5. Call Method
