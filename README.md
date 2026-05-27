@@ -127,25 +127,26 @@ core_file_destroy(&f);
 ### OOP (Basic)
 
 ```c
-// Define a method function
+// 1. Define a method function
 void speak(object_t* this, int argc, void** argv) {
     printf("%s says: Woof!\n", core_string_get_data(core_object_get_name(this)));
 }
 
+// 2. Create a method pointing to your method function
 method_t m = core_method_init("Speak", speak, PUBLIC);
 
-// 2. Create a Class
+// 3. Create a Class
 // class_t Class_Name = core_class_init(Class name, Base class pointer, Number of static members, Pointer to static members, Number of static methods, Pointer to static methods, Constructor function pointer, Destructor function pointer);
 class_t c = core_class_init("Dog", NULL, 0, NULL, 0, NULL, NULL, NULL); // Initialize a class with STATIC members & methods
 
-// 3. Create an Object (Instance)
-// object_t Object_Name = core_object_init(Class pointer, Object name, Number of instance members, Pointer to instance members, Number of static members, Pointer to static members);
+// 4. Create an Object (Instance)
+// object_t Object_Name = core_object_init(Class pointer, Object name, Number of instance members, Pointer to instance members, Number of instance methods, Pointer to instance methods);
 object_t o = core_object_init(&c, "Fido", 0, NULL, 1, &m); // Initialize an object with INSTANCE members & methods
 
-// 4. Call Method
+// 5. Call Method
 core_object_call(&o, "Speak", 0, NULL);
 
-// 5. Cleanup
+// 6. Cleanup
 core_object_destroy(&o);
 core_class_destroy(&c);
 core_method_destroy(&m);
