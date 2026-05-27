@@ -155,4 +155,11 @@ Fido says: Woof!
 ```
 
 ## License
-MIT © albaraa ialbaraai
+
+This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
+
+---
+
+## Author
+
+**albaraa** — [@ialbaraai](https://github.com/ialbaraai)
