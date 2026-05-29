@@ -227,6 +227,24 @@ void core_string_input(string_t* string)
         curchar = getchar();
     }
 }
+void core_string_input_strict(string_t* string, const size_t maximum)
+{
+    core_string_set(string, "");
+
+    int curchar = getchar();
+
+    while (curchar != '\n' && curchar != EOF)
+    {
+        core_string_append_char(string, (char)curchar);
+
+        if (core_string_get_size(string) >= maximum)
+        {
+            break;
+        }
+
+        curchar = getchar();
+    }
+}
 
 void core_string_lower(string_t* string)
 {
