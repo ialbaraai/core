@@ -27,6 +27,16 @@
 
 #define STRING_MAX_CAPACITY (1024ULL * 1024ULL * 1024ULL)
 
+#ifndef SUCCESS
+#define SUCCESS 1
+#endif
+
+#define STRING_ALREADY_INITIALIZED_ERROR 2
+#define STRING_CANNOT_ALLOCATE_DATA_ERROR 3
+#define STRING_POINTER_NULL_ERROR 4
+#define STRING_CSTR_NULL_ERROR 5
+#define STRING_DATA_NULL_ERROR 6
+
 typedef struct STRING_STRUCT
 {
     char* _String_Data; // string `data`, use `core_string_get_data(const string_t* string)` for safe getter
@@ -35,25 +45,25 @@ typedef struct STRING_STRUCT
 } string_t;
 
 // STRING INITIALIZATION
-string_t core_string_init(const size_t capacity); // Initialize a string struct with a capacity of `capacity`
-string_t core_string_init_data(const size_t capacity, const char* data); // Initialize a string struct with a capacity of `capacity` and content of `data`, truncates content to fit `capacity`
+int core_string_init(string_t* string, const size_t capacity); // Initialize `string` with a capacity of `capacity`, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
+int core_string_init_data(string_t* string, const size_t capacity, const char* data); // Initialize a string struct with a capacity of `capacity` and content of `data`, truncates content to fit `capacity`, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 
 // STRING MANIPULATIONS
-int core_string_set(string_t* string, const char* data); // Setting string content to `data`, returns 1 on success, and 0 on failure
-int core_string_copy(string_t* destination, const string_t* source); // Copying `source` content into `destination` content, returns 1 on success, and 0 on failure
+int core_string_set(string_t* string, const char* data); // Setting string content to `data`, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
+int core_string_copy(string_t* destination, const string_t* source); // Copying `source` content into `destination` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 int core_string_compare(const string_t* first, const string_t* second); // Comparing the content of `first` and `second`, returns 1 if same
 
-int core_string_pop_back(string_t* string); // Decrementing `string` size by one, returns 1 on success, and 0 on failure
+int core_string_pop_back(string_t* string); // Decrementing `string` size by one, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 
-int core_string_append_char(string_t* string, const char character); // Appending `character` at the end of `string` content, returns 1 on success, and 0 on failure
-int core_string_append_cstr(string_t* string, const char* source); // Appending `source` C-style string at the end of `string` content, retruns 1 on success, and 0 on failure
-int core_string_append_string(string_t* string, const string_t* source); // Appending `source` content at the end of `string` content, returns 1 on success, and 0 on failure
+int core_string_append_char(string_t* string, const char character); // Appending `character` at the end of `string` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
+int core_string_append_cstr(string_t* string, const char* source); // Appending `source` C-style string at the end of `string` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
+int core_string_append_string(string_t* string, const string_t* source); // Appending `source` content at the end of `string` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 
 void core_string_input(string_t* string); // Accepting user input into `string` content
 void core_string_input_strict(string_t* string, const size_t maximum); // Accepting user input into `string` content with a maximum length of `maximum`
 
-void core_string_lower(string_t* string); // Lowering all characters of `string` content
-void core_string_upper(string_t* string); // Uppering all characters of `string` content
+int core_string_lower(string_t* string); // Lowering all characters of `string` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
+int core_string_upper(string_t* string); // Uppering all characters of `string` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 
 // GETTERS
 size_t core_string_get_size(const string_t* string); // Getter for string `size` (length)
@@ -63,8 +73,8 @@ const char* core_string_get_data(const string_t* string); // Getter for string r
 char core_string_at(const string_t* string, size_t index); // Returning a `char` at a given `index` of `string` content if found, and returns `\0` if not found
 int core_string_find(const string_t* string, const char character, size_t* index); // Finding `character` from `string` content, returns 1 and assigns its index to `index` if found, and returns 0 if not found
 
-int core_string_replace_at(string_t* string, const size_t index, const char character); // Replacing `char` of `string` content at `index` to `character`, returns 1 on success, and 0 on failure
-void core_string_replace(string_t* string, const char oldc, const char newc); // Replacing all `oldc` character in `string` content to `newc` character
+int core_string_replace_at(string_t* string, const size_t index, const char character); // Replacing `char` of `string` content at `index` to `character`, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
+int core_string_replace(string_t* string, const char oldc, const char newc); // Replacing all `oldc` character in `string` content to `newc` character, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 
 // STRING DESTRUCTOR
 void core_string_destroy(string_t* string); // Free `string` allocated `data` memory and clear its data

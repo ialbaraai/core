@@ -3,46 +3,34 @@
 #include <stdio.h>
 #include <string.h>
 
-void str_copy(void* dest, const void* src)
+int core_file_init(file_t* file, const char* filepath, const size_t initial_lines_size, const size_t initial_line_size)
 {
-    string_t str = core_string_init_data(core_string_get_capacity((string_t*)src), core_string_get_data((string_t*)src));
+    if (!file) return FILE_POINTER_NULL_ERROR;
+    if (!filepath) return STRING_CSTR_NULL_ERROR;
 
-    memcpy(dest, &str, sizeof(string_t));
-}
-void str_destroy(void* object)
-{
-    if ((string_t*)object != NULL)
-    {
-        core_string_destroy((string_t*)object);
-    }
-}
+    core_string_init_data(&file->_File_Filepath, strlen(filepath) + 1, filepath);
+    core_vector_init(&file->_File_Data, initial_lines_size, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
+    file->_File_Initial_Line_Size = initial_line_size;
 
-file_t core_file_init(const char* filepath, const size_t initial_lines_size, const size_t initial_line_size)
-{
-    file_t empty = {0};
-
-    if (!filepath) return empty;
-
-    file_t file = {._File_Filepath = core_string_init_data(strlen(filepath) + 1, filepath), ._File_Data = core_vector_init(initial_lines_size, sizeof(string_t), str_copy, str_destroy), ._File_Initial_Line_Size = initial_line_size};
-
-    return file;
+    return SUCCESS;
 }
 
 int core_file_read(file_t* file)
 {
-    if (!file) return 0;
+    if (!file) return FILE_POINTER_NULL_ERROR;
     if (!file->_File_Data._Vector_Data) return 0;
-    if (!file->_File_Filepath._String_Data) return 0;
+    if (!file->_File_Filepath._String_Data) return STRING_DATA_NULL_ERROR;
 
     FILE* cfile = fopen(core_string_get_data(&file->_File_Filepath), "r");
 
-    if (!cfile) return 0;
+    if (!cfile) return FILE_CANNOT_OPEN_ERROR;
 
     core_vector_clear(&file->_File_Data);
 
     int curchar = 0;
 
-    string_t curstr = core_string_init(file->_File_Initial_Line_Size);
+    string_t curstr = {0};
+    core_string_init(&curstr, file->_File_Initial_Line_Size);
 
     while ((curchar = fgetc(cfile)) != EOF)
     {
@@ -66,17 +54,17 @@ int core_file_read(file_t* file)
 
     fclose(cfile);
 
-    return 1;
+    return SUCCESS;
 }
 int core_file_write(const file_t* file)
 {
-    if (!file) return 0;
-    if (!file->_File_Filepath._String_Data) return 0;
+    if (!file) return FILE_POINTER_NULL_ERROR;
     if (!file->_File_Data._Vector_Data) return 0;
+    if (!file->_File_Filepath._String_Data) return STRING_DATA_NULL_ERROR;
 
     FILE* cfile = fopen(core_string_get_data(&file->_File_Filepath), "w");
 
-    if (!cfile) return 0;
+    if (!cfile) return FILE_CANNOT_OPEN_ERROR;
 
     for (size_t i = 0; i < file->_File_Data._Vector_Size; ++i)
     {
@@ -86,7 +74,7 @@ int core_file_write(const file_t* file)
 
     fclose(cfile);
 
-    return 1;
+    return SUCCESS;
 }
 
 string_t* core_file_get_filepath(const file_t* file)

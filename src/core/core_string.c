@@ -5,41 +5,65 @@
 #include <ctype.h>
 #include <string.h>
 
-string_t core_string_init(const size_t capacity)
+int core_string_init(string_t* string, const size_t capacity)
 {
-    string_t string = {._String_Capacity = capacity, ._String_Size = 0, ._String_Data = malloc(capacity * sizeof(char))};
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (string->_String_Data != NULL) return STRING_ALREADY_INITIALIZED_ERROR;
 
-    if (!string._String_Data)
+    string->_String_Capacity = capacity;
+    string->_String_Size = 0;
+    string->_String_Data = malloc(capacity * sizeof(char));
+
+    if (!string->_String_Data)
     {
-        string._String_Capacity = 0;
+        string->_String_Capacity = 0;
+
+        return STRING_CANNOT_ALLOCATE_DATA_ERROR;
     }
     
-    if (string._String_Data) string._String_Data[0] = '\0';
+    if (string->_String_Data) string->_String_Data[0] = '\0';
 
-    return string;
+    return SUCCESS;
 }
-string_t core_string_init_data(const size_t capacity, const char* data)
+int core_string_init_data(string_t* string, const size_t capacity, const char* data)
 {
-    string_t string = core_string_init(capacity);
+    int ret = core_string_init(string, capacity);
 
-    if (string._String_Data && data)
+    if (ret != SUCCESS)
     {
-        size_t datalen = strlen(data);
-
-        size_t ocucapacity = capacity > datalen + 1 ? datalen + 1 : capacity;
-        memcpy(string._String_Data, data, ocucapacity);
-        string._String_Size = ocucapacity - 1;
-
-        string._String_Data[string._String_Size] = '\0';
+        return ret;
     }
 
-    return string;
+    if (string->_String_Data)
+    {
+        if (data)
+        {
+            size_t datalen = strlen(data);
+
+            size_t ocucapacity = capacity > datalen + 1 ? datalen + 1 : capacity;
+            memcpy(string->_String_Data, data, ocucapacity);
+            string->_String_Size = ocucapacity - 1;
+
+            string->_String_Data[string->_String_Size] = '\0';
+        }
+        else
+        {
+            return STRING_CSTR_NULL_ERROR;
+        }
+    }
+    else
+    {
+        return STRING_CANNOT_ALLOCATE_DATA_ERROR;
+    }
+
+    return SUCCESS;
 }
 
 int core_string_set(string_t* string, const char* data)
 {
-    if (!data || !string) return 0;
-    if (!string->_String_Data) return 0;
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!data) return STRING_CSTR_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
 
     size_t datalen = strlen(data);
 
@@ -47,13 +71,13 @@ int core_string_set(string_t* string, const char* data)
     {
         size_t newcapacity = string->_String_Capacity * 2 > datalen + 1 ? string->_String_Capacity * 2 : datalen + 1;
 
-        if (newcapacity > STRING_MAX_CAPACITY) return 0;
+        if (newcapacity > STRING_MAX_CAPACITY) return STRING_CANNOT_ALLOCATE_DATA_ERROR;
 
         char* temp = realloc(string->_String_Data, newcapacity * sizeof(char));
 
         if (!temp)
         {
-            return 0;
+            return STRING_CANNOT_ALLOCATE_DATA_ERROR;
         }
 
         string->_String_Data = temp;
@@ -64,12 +88,12 @@ int core_string_set(string_t* string, const char* data)
     string->_String_Size = datalen;
     string->_String_Data[string->_String_Size] = '\0';
 
-    return 1;
+    return SUCCESS;
 }
 int core_string_copy(string_t* destination, const string_t* source)
 {
-    if (!destination || !source) return 0;
-    if (!destination->_String_Data || !source->_String_Data) return 0;
+    if (!destination || !source) return STRING_POINTER_NULL_ERROR;
+    if (!destination->_String_Data || !source->_String_Data) return STRING_DATA_NULL_ERROR;
 
     size_t srclen = core_string_get_size(source);
 
@@ -77,13 +101,13 @@ int core_string_copy(string_t* destination, const string_t* source)
     {
         size_t newcapacity = destination->_String_Capacity * 2 > srclen + 1 ? destination->_String_Capacity * 2 : srclen + 1;
 
-        if (newcapacity > STRING_MAX_CAPACITY) return 0;
+        if (newcapacity > STRING_MAX_CAPACITY) return STRING_CANNOT_ALLOCATE_DATA_ERROR;
 
         char* temp = realloc(destination->_String_Data, newcapacity * sizeof(char));
 
         if (!temp)
         {
-            return 0;
+            return STRING_CANNOT_ALLOCATE_DATA_ERROR;
         }
 
         destination->_String_Data = temp;
@@ -94,12 +118,12 @@ int core_string_copy(string_t* destination, const string_t* source)
     destination->_String_Size = srclen;
     destination->_String_Data[destination->_String_Size] = '\0';
 
-    return 1;
+    return SUCCESS;
 }
 int core_string_compare(const string_t* first, const string_t* second)
 {
-    if (!first || !second) return 0;
-    if (!first->_String_Data || !second->_String_Data) return 0;
+    if (!first || !second) return STRING_POINTER_NULL_ERROR;
+    if (!first->_String_Data || !second->_String_Data) return STRING_DATA_NULL_ERROR;
 
     if (strcmp(first->_String_Data, second->_String_Data) == 0)
     {
@@ -113,32 +137,32 @@ int core_string_compare(const string_t* first, const string_t* second)
 
 int core_string_pop_back(string_t* string)
 {
-    if (!string) return 0;
-    if (!string->_String_Data) return 0;
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
     if (string->_String_Size < 1) return 0;
 
     string->_String_Size--;
     string->_String_Data[string->_String_Size] = '\0';
-    return 1;
+    return SUCCESS;
 }
 
 int core_string_append_char(string_t* string, const char character)
 {
-    if (!string) return 0;
-    if (!string->_String_Data) return 0;
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
     if (character == '\0') return 0;
 
     if (string->_String_Size + sizeof(character) + 1 > string->_String_Capacity)
     {
         size_t newcapacity = string->_String_Capacity * 2 > string->_String_Size + sizeof(character) + 1 ? string->_String_Capacity * 2 : string->_String_Size + sizeof(character) + 1;
 
-        if (newcapacity > STRING_MAX_CAPACITY) return 0;
+        if (newcapacity > STRING_MAX_CAPACITY) return STRING_CANNOT_ALLOCATE_DATA_ERROR;
 
         char* temp = realloc(string->_String_Data, newcapacity * sizeof(char));
 
         if (!temp)
         {
-            return 0;
+            return STRING_CANNOT_ALLOCATE_DATA_ERROR;
         }
 
         string->_String_Data = temp;
@@ -149,13 +173,13 @@ int core_string_append_char(string_t* string, const char character)
     string->_String_Size++;
     string->_String_Data[string->_String_Size] = '\0';
 
-    return 1;
+    return SUCCESS;
 }
 int core_string_append_cstr(string_t* string, const char* source)
 {
-    if (!string) return 0;
-    if (!string->_String_Data) return 0;
-    if (!source) return 0;
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
+    if (!source) return STRING_CSTR_NULL_ERROR;
 
     size_t sourcelen = strlen(source);
 
@@ -163,13 +187,13 @@ int core_string_append_cstr(string_t* string, const char* source)
     {
         size_t newcapacity = string->_String_Capacity * 2 > string->_String_Size + sourcelen + 1 ? string->_String_Capacity * 2 : string->_String_Size + sourcelen + 1;
 
-        if (newcapacity > STRING_MAX_CAPACITY) return 0;
+        if (newcapacity > STRING_MAX_CAPACITY) return STRING_CANNOT_ALLOCATE_DATA_ERROR;
 
         char* temp = realloc(string->_String_Data, newcapacity * sizeof(char));
 
         if (!temp)
         {
-            return 0;
+            return STRING_CANNOT_ALLOCATE_DATA_ERROR;
         }
 
         string->_String_Data = temp;
@@ -180,14 +204,14 @@ int core_string_append_cstr(string_t* string, const char* source)
     string->_String_Size += sourcelen;
     string->_String_Data[string->_String_Size] = '\0';
 
-    return 1;
+    return SUCCESS;
 }
 int core_string_append_string(string_t* string, const string_t* source)
 {
-    if (!string) return 0;
-    if (!source) return 0;
-    if (!string->_String_Data) return 0;
-    if (!source->_String_Data) return 0;
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!source) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
+    if (!source->_String_Data) return STRING_DATA_NULL_ERROR;
 
     size_t sourcelen = core_string_get_size(source);
 
@@ -195,13 +219,13 @@ int core_string_append_string(string_t* string, const string_t* source)
     {
         size_t newcapacity = string->_String_Capacity * 2 > string->_String_Size + sourcelen + 1 ? string->_String_Capacity * 2 : string->_String_Size + sourcelen + 1;
 
-        if (newcapacity > STRING_MAX_CAPACITY) return 0;
+        if (newcapacity > STRING_MAX_CAPACITY) return STRING_CANNOT_ALLOCATE_DATA_ERROR;
 
         char* temp = realloc(string->_String_Data, newcapacity * sizeof(char));
 
         if (!temp)
         {
-            return 0;
+            return STRING_CANNOT_ALLOCATE_DATA_ERROR;
         }
 
         string->_String_Data = temp;
@@ -212,7 +236,7 @@ int core_string_append_string(string_t* string, const string_t* source)
     string->_String_Size += sourcelen;
     string->_String_Data[string->_String_Size] = '\0';
 
-    return 1;
+    return SUCCESS;
 }
 
 void core_string_input(string_t* string)
@@ -223,7 +247,10 @@ void core_string_input(string_t* string)
 
     while (curchar != '\n' && curchar != EOF)
     {
-        core_string_append_char(string, (char)curchar);
+        if (core_string_append_char(string, (char)curchar) == STRING_CANNOT_ALLOCATE_DATA_ERROR)
+        {
+            return;
+        }
         curchar = getchar();
     }
 }
@@ -246,25 +273,29 @@ void core_string_input_strict(string_t* string, const size_t maximum)
     }
 }
 
-void core_string_lower(string_t* string)
+int core_string_lower(string_t* string)
 {
-    if (!string) return;
-    if (!string->_String_Data) return;
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
 
     for (size_t i = 0; i < string->_String_Size; ++i)
     {
         string->_String_Data[i] = tolower((unsigned char)string->_String_Data[i]);
     }
+
+    return SUCCESS;
 }
-void core_string_upper(string_t* string)
+int core_string_upper(string_t* string)
 {
-    if (!string) return;
-    if (!string->_String_Data) return;
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
     
     for (size_t i = 0; i < string->_String_Size; ++i)
     {
         string->_String_Data[i] = toupper((unsigned char)string->_String_Data[i]);
     }
+
+    return SUCCESS;
 }
 
 size_t core_string_get_size(const string_t* string)
@@ -320,19 +351,19 @@ int core_string_find(const string_t* string, const char character, size_t* index
 }
 int core_string_replace_at(string_t* string, const size_t index, const char character)
 {
-    if (!string) return 0;
-    if (!string->_String_Data) return 0;
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
     if (index >= string->_String_Size) return 0;
 
     string->_String_Data[index] = character;
-    return 1;
+    return SUCCESS;
 }
-void core_string_replace(string_t* string, const char oldc, const char newc)
+int core_string_replace(string_t* string, const char oldc, const char newc)
 {
-    if (!string) return;
-    if (!string->_String_Data) return;
-    if (oldc == '\0') return;
-    if (newc == '\0') return;
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
+    if (oldc == '\0') return 0;
+    if (newc == '\0') return 0;
 
     for(size_t i = 0; i < string->_String_Size; ++i)
     {
@@ -341,6 +372,8 @@ void core_string_replace(string_t* string, const char oldc, const char newc)
             string->_String_Data[i] = newc;
         }
     }
+
+    return SUCCESS;
 }
 
 void core_string_destroy(string_t* string)
@@ -363,9 +396,11 @@ void core_string_copy_callback(void* destination, const void* source)
     {
         const string_t* src = (const string_t*)source;
 
-        string_t copy = core_string_init_data(core_string_get_capacity(src), core_string_get_data(src));
-
-        memcpy(destination, &copy, sizeof(string_t));
+        string_t copy = {0};
+        if (core_string_init_data(&copy, core_string_get_capacity(src), core_string_get_data(src)) == SUCCESS)
+        {
+            memcpy(destination, &copy, sizeof(string_t));
+        }
     }
 }
 void core_string_destroy_callback(void* object)

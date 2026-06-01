@@ -28,6 +28,19 @@
 
 #define MAP_MAX_CAPACITY (1024ULL * 1024ULL * 1024ULL)
 
+#ifndef SUCCESS
+#define SUCCESS 1
+#endif
+
+#define MAP_ALREADY_INITIALIZED_ERROR 32
+#define MAP_CANNOT_ALLOCATE_DATA_ERROR 33
+#define MAP_POINTER_NULL_ERROR 34
+#define MAP_KEY_ELEMENT_NULL_ERROR 35
+#define MAP_VALUE_ELEMENT_NULL_ERROR 36
+#define MAP_KEY_DATA_NULL_ERROR 37
+#define MAP_VALUE_DATA_NULL_ERROR 38
+#define MAP_FUNCTION_NULL_ERROR 39
+
 typedef struct MAP_STRUCT
 {
     void* _Map_Key_Data; // map `key data`, use `core_map_get_key_data(const map_t* map)` for safe getter
@@ -44,16 +57,17 @@ typedef struct MAP_STRUCT
 } map_t;
 
 // MAP INITIALIZATION
-map_t core_map_init(const size_t capacity, const size_t key_size, const size_t value_size, copy_function_t key_copy_function, destroy_function_t key_destroy_function, copy_function_t value_copy_function, destroy_function_t value_destroy_function, int (*compare_function)(const void* first, const void* second)); // Initialize a map struct with a capacity of `capacity`, key element size of `key_size`, value element size of `value_size`, key copy function callback `void key_copy_function(void* destination, const void* source)` to decide how to insert keys into map (`NULL` for default), key destroy function callback `void key_destroy_function(void* object)` to decide how to destroy key objects from map (`NULL` for default), value copy function callback `void value_copy_function(void* destination, const void* source)` to decide how to insert values into map (`NULL` for default), value destroy function callback `void value_destroy_function(void* object)` to decide how to destroy value objects from map (`NULL` for default), and compare function callback `int compare_function(const void* first, const void* second)` to decide how elements are compared (REQUIRED, return `0` if same)
-map_t core_map_init_data(const size_t capacity, const size_t key_size, const size_t value_size, const size_t count, copy_function_t key_copy_function, destroy_function_t key_destroy_function, copy_function_t value_copy_function, destroy_function_t value_destroy_function, int (*compare_function)(const void* first, const void* second), const void* key_data, const void* value_data); // Initialize a map struct with a capacity of `capacity`, key element size of `key_size`, value element size of `value_size`, key copy function callback `void key_copy_function(void* destination, const void* source)` to decide how to insert keys into map (`NULL` for default), key destroy function callback `void key_destroy_function(void* object)` to decide how to destroy key objects from map (`NULL` for default), value copy function callback `void value_copy_function(void* destination, const void* source)` to decide how to insert values into map (`NULL` for default), value destroy function callback `void value_destroy_function(void* object)` to decide how to destroy value objects from map (`NULL` for default), compare function callback `int compare_function(const void* first, const void* second)` to decide how elements are compared (REQUIRED, return `0` if same), and key data of `key_data`, and value data of `value_data`, copies `count` amount of elements from `key_data` and `value_data`
+int core_map_init(map_t* map, const size_t capacity, const size_t key_size, const size_t value_size, copy_function_t key_copy_function, destroy_function_t key_destroy_function, copy_function_t value_copy_function, destroy_function_t value_destroy_function, int (*compare_function)(const void* first, const void* second)); // Initialize `map` with a capacity of `capacity`, key element size of `key_size`, value element size of `value_size`, key copy function callback `void key_copy_function(void* destination, const void* source)` to decide how to insert keys into map (`NULL` for default), key destroy function callback `void key_destroy_function(void* object)` to decide how to destroy key objects from map (`NULL` for default), value copy function callback `void value_copy_function(void* destination, const void* source)` to decide how to insert values into map (`NULL` for default), value destroy function callback `void value_destroy_function(void* object)` to decide how to destroy value objects from map (`NULL` for default), and compare function callback `int compare_function(const void* first, const void* second)` to decide how elements are compared (REQUIRED, return `0` if same), returns `SUCCESS` on success, and `MAP_*_ERROR` on failure
+int core_map_init_data(map_t* map, const size_t capacity, const size_t key_size, const size_t value_size, const size_t count, copy_function_t key_copy_function, destroy_function_t key_destroy_function, copy_function_t value_copy_function, destroy_function_t value_destroy_function, int (*compare_function)(const void* first, const void* second), const void* key_data, const void* value_data); // Initialize a map struct with a capacity of `capacity`, key element size of `key_size`, value element size of `value_size`, key copy function callback `void key_copy_function(void* destination, const void* source)` to decide how to insert keys into map (`NULL` for default), key destroy function callback `void key_destroy_function(void* object)` to decide how to destroy key objects from map (`NULL` for default), value copy function callback `void value_copy_function(void* destination, const void* source)` to decide how to insert values into map (`NULL` for default), value destroy function callback `void value_destroy_function(void* object)` to decide how to destroy value objects from map (`NULL` for default), compare function callback `int compare_function(const void* first, const void* second)` to decide how elements are compared (REQUIRED, return `0` if same), and key data of `key_data`, and value data of `value_data`, copies `count` amount of elements from `key_data` and `value_data`, returns `SUCCESS` on success, and `MAP_*_ERROR` on failure
 
 // MAP MANIPULATION
-int core_map_push_back(map_t* map, const void* key, const void* value); // Pushing a pair with the key of `key` and value of `value` to `map` through `key_copy_function` and `value_copy_function` if assigned, returns 1 on success, and 0 on failure
-int core_map_pop_back(map_t* map); // Decrementing `map` size by one, returns 1 on success, and 0 on failure
-int core_map_set(map_t* map, const void* key, const void* value); // Setting map value at `key` to `value`, returns 1 on success, and 0 on failure
-int core_map_remove(map_t* map, const void* key); // Removing a pair at `key`, returns 1 on succes, and 0 on failure
+int core_map_push_back(map_t* map, const void* key, const void* value); // Pushing a pair with the key of `key` and value of `value` to `map` through `key_copy_function` and `value_copy_function` if assigned, returns `SUCCESS` on success, and `MAP_*_ERROR` on failure
+int core_map_pop_back(map_t* map); // Decrementing `map` size by one and calling `key_destroy_function` and `value_destroy_function` on last `key,value` pair if assigned, returns `SUCCESS` on success, and `MAP_*_ERROR` on failure
+int core_map_set(map_t* map, const void* key, const void* value); // Setting map value at `key` to `value`, returns `SUCCESS` on success, and `MAP_*_ERROR` on failure
+int core_map_remove(map_t* map, const void* key); // Removing a pair at `key`, returns `SUCCESS` on success, and `MAP_*_ERROR` on failure
+int core_map_clear(map_t* map); // Clearing all data of `map`, keeps `capacity` reserved, returns `SUCCESS` on success, and `MAP_*_ERROR` on failure
 
-void core_map_foreach(map_t* map, void (*function)(void* key, void* value)); // Calling `function(void* key, void* value)` for each pair in map `data`
+int core_map_foreach(map_t* map, void (*function)(void* key, void* value)); // Calling `function(void* key, void* value)` for each pair in map `data`, returns `SUCCESS` on success, and `MAP_*_ERROR` on failure
 
 // GETTERS
 size_t core_map_get_key_size(const map_t* map); // Getter for map `key element size`
@@ -69,7 +83,7 @@ void* core_map_last_key(const map_t* map); // Getter for the last key of `map`
 void* core_map_first_value(const map_t* map); // Getter for the first value of `map`
 void* core_map_last_value(const map_t* map); // Getter for the last value of `map`
 
-int core_map_get_value_at(const map_t* map, const void* key, void* value); // Assigns parameter `value` to the value at a given `key` of `map` if found, returns 1 if found, and 0 on failure
+int core_map_get_value_at(const map_t* map, const void* key, void* value); // Assigns parameter `value` to the value at a given `key` of `map` if found, returns `SUCCESS` if found, and `MAP_*_ERROR` on failure, and 0 if not found
 void* core_map_get_value(const map_t* map, const void* key); // Returning the value `void*` at a given `key` of `map`, returns `NULL` if not found
 
 // MAP DESTRUCTOR

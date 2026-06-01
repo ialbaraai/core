@@ -26,6 +26,13 @@
 #include "../containers/core_vector.h"
 #include "core_string.h"
 
+#ifndef SUCCESS
+#define SUCCESS 1
+#endif
+
+#define FILE_POINTER_NULL_ERROR 12
+#define FILE_CANNOT_OPEN_ERROR 13
+
 typedef struct FILE_STRUCT
 {
     string_t _File_Filepath; // file `filepath`, use `core_file_get_filepath(const file_t* file)` for safe getter
@@ -34,7 +41,7 @@ typedef struct FILE_STRUCT
 } file_t;
 
 // FILE INITIALIZATION
-file_t core_file_init(const char* filepath, const size_t initial_lines_size, const size_t initial_line_size); // Initialize a file struct with a filepath of `filepath`, initial file lines capacity of `initial_lines_size`, and initial line capacity of `initial_line_size`
+int core_file_init(file_t* file, const char* filepath, const size_t initial_lines_size, const size_t initial_line_size); // Initialize a file struct with a filepath of `filepath`, initial file lines capacity of `initial_lines_size`, and initial line capacity of `initial_line_size`
 
 // FILE MANIPULATION
 int core_file_read(file_t* file); // Reading file `filepath` data into file `data` vector, returns 1 on success, and 0 on failure

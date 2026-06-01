@@ -28,6 +28,17 @@
 
 #define VECTOR_MAX_CAPACITY (1024ULL * 1024ULL * 1024ULL)
 
+#ifndef SUCCESS
+#define SUCCESS 1
+#endif
+
+#define VECTOR_ALREADY_INITIALIZED_ERROR 22
+#define VECTOR_CANNOT_ALLOCATE_DATA_ERROR 23
+#define VECTOR_POINTER_NULL_ERROR 24
+#define VECTOR_ELEMENT_NULL_ERROR 25
+#define VECTOR_DATA_NULL_ERROR 26
+#define VECTOR_FUNCTION_NULL_ERROR 27
+
 typedef struct VECTOR_STRUCT
 {
     void* _Vector_Data; // vector `data`, use `core_vector_get_data(const vector_t* vector)` for safe getter
@@ -39,17 +50,17 @@ typedef struct VECTOR_STRUCT
 } vector_t;
 
 // VECTOR INITIALIZATION
-vector_t core_vector_init(const size_t capacity, const size_t element_size, copy_function_t copy_function, destroy_function_t destroy_function); // Initialize a vector struct with a capacity of `capacity`, element size of `element_size`, copy function callback `void copy_function(void* destination, const void* source)` to decide how to insert values into vector (`NULL` for default), and destroy function callback `void destroy_function(void* object)` to decide how to destroy objects from vector (`NULL` for default)
-vector_t core_vector_init_data(const size_t capacity, const size_t element_size, const size_t count, copy_function_t copy_function, destroy_function_t destroy_function, const void* data); // Initialize a vector struct with a capacity of `capacity`, element size of `element_size`, copy function callback `void copy_function(void* destination, const void* source)` to decide how to insert values into vector (`NULL` for default), destroy function callback `void destroy_function(void* object)` to decide how to destroy objects from vector (`NULL` for default), and data of `data`, copies `count` amount of elements from `data`
+int core_vector_init(vector_t* vector, const size_t capacity, const size_t element_size, copy_function_t copy_function, destroy_function_t destroy_function); // Initialize `vector` with a capacity of `capacity`, element size of `element_size`, copy function callback `void copy_function(void* destination, const void* source)` to decide how to insert values into vector (`NULL` for default), and destroy function callback `void destroy_function(void* object)` to decide how to destroy objects from vector (`NULL` for default), returns `SUCCESS` on success, and `VECTOR_*_ERROR` on failure
+int core_vector_init_data(vector_t* vector, const size_t capacity, const size_t element_size, const size_t count, copy_function_t copy_function, destroy_function_t destroy_function, const void* data); // Initialize `vector` with a capacity of `capacity`, element size of `element_size`, copy function callback `void copy_function(void* destination, const void* source)` to decide how to insert values into vector (`NULL` for default), destroy function callback `void destroy_function(void* object)` to decide how to destroy objects from vector (`NULL` for default), and data of `data`, copies `count` amount of elements from `data`, returns `SUCCESS` on success, and `VECTOR_*_ERROR` on failure
 
 // VECTOR MANIPULATION
-int core_vector_push_back(vector_t* vector, const void* value); // Pushing back an element with the value of `value` to `vector` through `copy_function` if assigned, returns 1 on success, and 0 on failure
-int core_vector_pop_back(vector_t* vector); // Decrementing `vector` size by one, returns 1 on success, and 0 on failure
-int core_vector_set(vector_t* vector, const size_t index, const void* value); // Setting vector content at `index` to `value`, returns 1 on success, and 0 on failure
-int core_vector_remove(vector_t* vector, const size_t index); // Removing an element at `index`, returns 1 on success, and 0 on failure
-int core_vector_clear(vector_t* vector); // Clearing all data of `vector`, keeps `capacity` reserved, returns 1 on success, and 0 on failure
+int core_vector_push_back(vector_t* vector, const void* value); // Pushing back an element with the value of `value` to `vector` through `copy_function` if assigned, returns `SUCCESS` on success, and `VECTOR_*_ERROR` on failure
+int core_vector_pop_back(vector_t* vector); // Decrementing `vector` size by one and calling `destroy_function` on last element if assigned, returns `SUCCESS` on success, and `VECTOR_*_ERROR` on failure, and 0 if cannot remove
+int core_vector_set(vector_t* vector, const size_t index, const void* value); // Setting vector content at `index` to `value`, returns `SUCCESS` on success, and `VECTOR_*_ERROR` on failure, and 0 if out of bound
+int core_vector_remove(vector_t* vector, const size_t index); // Removing an element at `index`, returns `SUCCESS` on success, and `VECTOR_*_ERROR` on failure, and 0 if out of bound or if cannot remove
+int core_vector_clear(vector_t* vector); // Clearing all data of `vector`, keeps `capacity` reserved, returns `SUCCESS` on success, and `VECTOR_*_ERROR` on failure
 
-void core_vector_foreach(vector_t* vector, void (*function)(const size_t index, void* data)); // Calling `function(const size_t index, void* data)` for each element in vector `data`
+int core_vector_foreach(vector_t* vector, void (*function)(const size_t index, void* data)); // Calling `function(const size_t index, void* data)` for each element in vector `data`, returns `SUCCESS` on success, and `VECTOR_*_ERROR` on failure
 
 // GETTERS
 size_t core_vector_get_size(const vector_t* vector); // Getter for vector `size` (length)
@@ -60,7 +71,7 @@ const void* core_vector_get_data(const vector_t* vector); // Getter for vector r
 void* core_vector_first(const vector_t* vector); // Getter for the first element of `vector`
 void* core_vector_last(const vector_t* vector); // Getter for the last element of `vector`
 
-int core_vector_at(const vector_t* vector, const size_t index, void* value); // Assigns parameter `void*` to the value at a given `index` of `vector` if found, returns 1 if found, and 0 on failure
+int core_vector_at(const vector_t* vector, const size_t index, void* value); // Assigns parameter `void*` to the value at a given `index` of `vector` if found, returns `SUCCESS` if found, and `VECTOR_*_ERROR` on failure, and 0 if out of bound
 void* core_vector_get(const vector_t* vector, const size_t index); // Returning the value `void*` at a given `index` of `vector`, returns `NULL` if not found
 
 // VECTOR DESTRUCTOR
