@@ -9,7 +9,8 @@
 
 void test_init(void)
 {
-    vector_t v = core_vector_init(8, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 8, sizeof(int), NULL, NULL);
     assert(v._Vector_Data != NULL);
     assert(core_vector_get_capacity(&v) == 8);
     assert(core_vector_get_size(&v) == 0);
@@ -20,7 +21,8 @@ void test_init(void)
 void test_init_data(void)
 {
     int arr[] = {1, 2, 3};
-    vector_t v = core_vector_init_data(8, sizeof(int), 3, NULL, NULL, arr);
+    vector_t v = {0};
+    core_vector_init_data(&v, 8, sizeof(int), 3, NULL, NULL, arr);
     assert(core_vector_get_size(&v) == 3);
     assert(*(int*)core_vector_get(&v, 0) == 1);
     assert(*(int*)core_vector_get(&v, 2) == 3);
@@ -31,9 +33,10 @@ void test_init_data(void)
 
 void test_push_back_primitives(void)
 {
-    vector_t v = core_vector_init(4, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(int), NULL, NULL);
     for (int i = 0; i < 10; ++i)
-        assert(core_vector_push_back(&v, &i) == 1);
+        assert(core_vector_push_back(&v, &i) == SUCCESS);
 
     assert(core_vector_get_size(&v) == 10);
     for (int i = 0; i < 10; ++i)
@@ -44,7 +47,8 @@ void test_push_back_primitives(void)
 
 void test_push_back_grows(void)
 {
-    vector_t v = core_vector_init(2, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 2, sizeof(int), NULL, NULL);
     int x = 99;
     core_vector_push_back(&v, &x);
     core_vector_push_back(&v, &x);
@@ -56,12 +60,14 @@ void test_push_back_grows(void)
 
 void test_push_back_strings(void)
 {
-    vector_t v = core_vector_init(4, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
     const char* words[] = {"alpha", "beta", "gamma"};
 
     for (int i = 0; i < 3; ++i)
     {
-        string_t s = core_string_init_data(32, words[i]);
+        string_t s = {0};
+        core_string_init_data(&s, 32, words[i]);
         core_vector_push_back(&v, &s);
         core_string_destroy(&s);
     }
@@ -77,10 +83,11 @@ void test_push_back_strings(void)
 
 void test_pop_back(void)
 {
-    vector_t v = core_vector_init(4, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(int), NULL, NULL);
     int x = 5;
     core_vector_push_back(&v, &x);
-    assert(core_vector_pop_back(&v) == 1);
+    assert(core_vector_pop_back(&v) == SUCCESS);
     assert(core_vector_get_size(&v) == 0);
     assert(core_vector_pop_back(&v) == 0); // empty
     core_vector_destroy(&v);
@@ -88,11 +95,13 @@ void test_pop_back(void)
 
 void test_pop_back_calls_destroy(void)
 {
-    vector_t v = core_vector_init(4, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
-    string_t s = core_string_init_data(16, "test");
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
+    string_t s = {0};
+    core_string_init_data(&s, 16, "test");
     core_vector_push_back(&v, &s);
     core_string_destroy(&s);
-    assert(core_vector_pop_back(&v) == 1); // should call core_string_destroy_callback without crashing
+    assert(core_vector_pop_back(&v) == SUCCESS); // should call core_string_destroy_callback without crashing
     assert(core_vector_get_size(&v) == 0);
     core_vector_destroy(&v);
 }
@@ -101,10 +110,11 @@ void test_pop_back_calls_destroy(void)
 
 void test_set(void)
 {
-    vector_t v = core_vector_init(4, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(int), NULL, NULL);
     int x = 1, y = 99;
     core_vector_push_back(&v, &x);
-    assert(core_vector_set(&v, 0, &y) == 1);
+    assert(core_vector_set(&v, 0, &y) == SUCCESS);
     assert(*(int*)core_vector_get(&v, 0) == 99);
     assert(core_vector_set(&v, 99, &y) == 0); // out of bounds
     core_vector_destroy(&v);
@@ -112,9 +122,12 @@ void test_set(void)
 
 void test_set_strings_destroys_old(void)
 {
-    vector_t v = core_vector_init(4, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
-    string_t a = core_string_init_data(16, "old");
-    string_t b = core_string_init_data(16, "new");
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(string_t), core_string_copy_callback, core_string_destroy_callback);
+    string_t a = {0};
+    core_string_init_data(&a, 16, "old");
+    string_t b = {0};
+    core_string_init_data(&b, 16, "new");
     core_vector_push_back(&v, &a);
     core_string_destroy(&a);
     core_vector_set(&v, 0, &b);  // must destroy "old" before writing "new"
@@ -127,11 +140,12 @@ void test_set_strings_destroys_old(void)
 
 void test_remove(void)
 {
-    vector_t v = core_vector_init(8, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 8, sizeof(int), NULL, NULL);
     for (int i = 0; i < 5; ++i)
         core_vector_push_back(&v, &i);
 
-    assert(core_vector_remove(&v, 2) == 1);
+    assert(core_vector_remove(&v, 2) == SUCCESS);
     assert(core_vector_get_size(&v) == 4);
     assert(core_vector_remove(&v, 99) == 0); // out of bounds
     core_vector_destroy(&v);
@@ -139,10 +153,11 @@ void test_remove(void)
 
 void test_remove_last(void)
 {
-    vector_t v = core_vector_init(4, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(int), NULL, NULL);
     int x = 42;
     core_vector_push_back(&v, &x);
-    assert(core_vector_remove(&v, 0) == 1);
+    assert(core_vector_remove(&v, 0) == SUCCESS);
     assert(core_vector_get_size(&v) == 0);
     core_vector_destroy(&v);
 }
@@ -151,11 +166,12 @@ void test_remove_last(void)
 
 void test_at(void)
 {
-    vector_t v = core_vector_init(4, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(int), NULL, NULL);
     int x = 7;
     core_vector_push_back(&v, &x);
     int out = 0;
-    assert(core_vector_at(&v, 0, &out) == 1);
+    assert(core_vector_at(&v, 0, &out) == SUCCESS);
     assert(out == 7);
     assert(core_vector_at(&v, 99, &out) == 0);
     core_vector_destroy(&v);
@@ -165,7 +181,8 @@ void test_at(void)
 
 void test_first_last(void)
 {
-    vector_t v = core_vector_init(4, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(int), NULL, NULL);
     int a = 1, b = 2, c = 3;
     core_vector_push_back(&v, &a);
     core_vector_push_back(&v, &b);
@@ -177,7 +194,8 @@ void test_first_last(void)
 
 void test_last_empty(void)
 {
-    vector_t v = core_vector_init(4, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(int), NULL, NULL);
     assert(core_vector_last(&v) == NULL);
     core_vector_destroy(&v);
 }
@@ -189,7 +207,8 @@ static void sum_fn(size_t index, void* data) { (void)index; foreach_sum += *(int
 
 void test_foreach(void)
 {
-    vector_t v = core_vector_init(4, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(int), NULL, NULL);
     for (int i = 1; i <= 4; ++i)
         core_vector_push_back(&v, &i);
     foreach_sum = 0;
@@ -202,7 +221,8 @@ void test_foreach(void)
 
 void test_destroy(void)
 {
-    vector_t v = core_vector_init(4, sizeof(int), NULL, NULL);
+    vector_t v = {0};
+    core_vector_init(&v, 4, sizeof(int), NULL, NULL);
     int x = 1;
     core_vector_push_back(&v, &x);
     core_vector_destroy(&v);
@@ -222,11 +242,11 @@ void test_null_guards(void)
     assert(core_vector_get(NULL, 0) == NULL);
     assert(core_vector_first(NULL) == NULL);
     assert(core_vector_last(NULL) == NULL);
-    assert(core_vector_push_back(NULL, NULL) == 0);
-    assert(core_vector_pop_back(NULL) == 0);
-    assert(core_vector_set(NULL, 0, NULL) == 0);
-    assert(core_vector_remove(NULL, 0) == 0);
-    assert(core_vector_at(NULL, 0, NULL) == 0);
+    assert(core_vector_push_back(NULL, NULL) == VECTOR_POINTER_NULL_ERROR);
+    assert(core_vector_pop_back(NULL) == VECTOR_POINTER_NULL_ERROR);
+    assert(core_vector_set(NULL, 0, NULL) == VECTOR_POINTER_NULL_ERROR);
+    assert(core_vector_remove(NULL, 0) == VECTOR_POINTER_NULL_ERROR);
+    assert(core_vector_at(NULL, 0, NULL) == VECTOR_POINTER_NULL_ERROR);
 }
 
 // ── main ──────────────────────────────────────────────────────────────────────

@@ -8,7 +8,7 @@
 int core_string_init(string_t* string, const size_t capacity)
 {
     if (!string) return STRING_POINTER_NULL_ERROR;
-    if (string->_String_Data != NULL) return STRING_ALREADY_INITIALIZED_ERROR;
+    if (string->_String_Data) return STRING_ALREADY_INITIALIZED_ERROR;
 
     string->_String_Capacity = capacity;
     string->_String_Size = 0;

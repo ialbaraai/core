@@ -145,16 +145,19 @@ void speak(object_t* this, int argc, void** argv) {
 }
 
 // 2. Create a method pointing to your method function
-method_t m = core_method_init("Speak", speak, PUBLIC);
+method_t m = {0};
+core_method_init(&m, "Speak", speak, PUBLIC);
 
 // 3. Create a Class
-// class_t Class_Name = core_class_init(Class name, Base class pointer, Number of static members, Pointer to static members, Number of static methods, Pointer to static methods, Constructor function pointer, Destructor function pointer);
-class_t c = core_class_init("Dog", NULL, 0, NULL, 0, NULL, NULL, NULL); // Initialize a class with STATIC members & methods
+// core_class_init(Class pointer, Class name, Base class pointer, Number of static members, Pointer to static members, Number of static methods, Pointer to static methods, Constructor function pointer, Destructor function pointer);
+class_t c = {0};
+core_class_init(&c, "Dog", NULL, 0, NULL, 0, NULL, NULL, NULL); // Initialize a class with STATIC members & methods
 
 // 4. Create an Object (Instance)
-// object_t Object_Name = core_object_init(Class pointer, Object name, Number of instance members, Pointer to instance members, Number of instance methods, Pointer to instance methods); (If no class constructor method)
-// Object_t Object_Name = Class.constructor(Number of arguments, Constructor arguments); (If `Class` has constructor method, must call `Class.destructor(&Object_Name)` for destructor)
-object_t o = core_object_init(&c, "Fido", 0, NULL, 1, &m); // Initialize an object with INSTANCE members & methods
+// core_object_init(Object pointer, Class pointer, Object name, Number of instance members, Pointer to instance members, Number of instance methods, Pointer to instance methods); (If no class constructor method)
+// Class.constructor(Object pointer, Number of arguments, Constructor arguments); (If `Class` has constructor method, must call `Class.destructor(&Object_Name)` for destructor)
+object_t o = {0};
+core_object_init(&o, &c, "Fido", 0, NULL, 1, &m); // Initialize an object with INSTANCE members & methods
 
 // 5. Call Method
 core_object_call(&o, "Speak", 0, NULL);

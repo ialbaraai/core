@@ -49,7 +49,7 @@ int core_string_init(string_t* string, const size_t capacity); // Initialize `st
 int core_string_init_data(string_t* string, const size_t capacity, const char* data); // Initialize a string struct with a capacity of `capacity` and content of `data`, truncates content to fit `capacity`, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 
 // STRING MANIPULATIONS
-int core_string_set(string_t* string, const char* data); // Setting string content to `data`, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
+int core_string_set(string_t* string, const char* data); // Setting `string` content to `data`, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 int core_string_copy(string_t* destination, const string_t* source); // Copying `source` content into `destination` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 int core_string_compare(const string_t* first, const string_t* second); // Comparing the content of `first` and `second`, returns 1 if same
 

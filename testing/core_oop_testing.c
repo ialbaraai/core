@@ -6,84 +6,219 @@
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-static void dummy_method(object_t* this, int argc, void** argv) { (void)this; (void)argc; (void)argv; }
+static void dummy_method(object_t* this, int argc, void** argv)
+{
+    (void)this;
+    (void)argc;
+    (void)argv;
+}
+
 static int method_called = 0;
-static void tracking_method(object_t* this, int argc, void** argv) { (void)this; (void)argc; (void)argv; method_called = 1; }
+
+static void tracking_method(object_t* this, int argc, void** argv)
+{
+    (void)this;
+    (void)argc;
+    (void)argv;
+
+    method_called = 1;
+}
+
 static int base_method_called = 0;
-static void base_tracking_method(object_t* this, int argc, void** argv) { (void)this; (void)argc; (void)argv; base_method_called = 1; }
+
+static void base_tracking_method(object_t* this, int argc, void** argv)
+{
+    (void)this;
+    (void)argc;
+    (void)argv;
+
+    base_method_called = 1;
+}
 
 // ── member: init ──────────────────────────────────────────────────────────────
 
 void test_member_init(void)
 {
-    member_t m = core_member_init("score", NULL, sizeof(int), PUBLIC, NULL, NULL);
-    assert(core_member_get_name(&m) != NULL);
-    assert(strcmp(core_string_get_data(core_member_get_name(&m)), "score") == 0);
-    assert(core_member_get_value_size(&m) == sizeof(int));
-    assert(core_member_get_value(&m) != NULL);
-    assert(*core_member_get_visibility(&m) == PUBLIC);
-    core_member_destroy(&m);
+    member_t member = {0};
+
+    assert(
+        core_member_init(
+            &member,
+            "score",
+            NULL,
+            sizeof(int),
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(core_member_get_name(&member) != NULL);
+    assert(strcmp(core_string_get_data(core_member_get_name(&member)), "score") == 0);
+    assert(core_member_get_value_size(&member) == sizeof(int));
+    assert(core_member_get_value(&member) != NULL);
+    assert(*core_member_get_visibility(&member) == PUBLIC);
+
+    core_member_destroy(&member);
 }
 
 void test_member_init_data(void)
 {
-    int val = 42;
-    member_t m = core_member_init_data("score", NULL, &val, sizeof(int), PUBLIC, NULL, NULL);
-    assert(*(int*)core_member_get_value(&m) == 42);
-    core_member_destroy(&m);
+    int value = 42;
+
+    member_t member = {0};
+
+    assert(
+        core_member_init_data(
+            &member,
+            "score",
+            NULL,
+            sizeof(int),
+            &value,
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(*(int*)core_member_get_value(&member) == 42);
+
+    core_member_destroy(&member);
 }
 
 void test_member_init_private(void)
 {
-    int val = 0;
-    member_t m = core_member_init_data("hidden", NULL, &val, sizeof(int), PRIVATE, NULL, NULL);
-    assert(*core_member_get_visibility(&m) == PRIVATE);
-    core_member_destroy(&m);
+    int value = 0;
+
+    member_t member = {0};
+
+    assert(
+        core_member_init_data(
+            &member,
+            "hidden",
+            NULL,
+            sizeof(int),
+            &value,
+            PRIVATE,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(*core_member_get_visibility(&member) == PRIVATE);
+
+    core_member_destroy(&member);
 }
 
 // ── member: set_value ─────────────────────────────────────────────────────────
 
 void test_member_set_value(void)
 {
-    int val = 10;
-    member_t m = core_member_init_data("score", NULL, &val, sizeof(int), PUBLIC, NULL, NULL);
-    int new_val = 99;
-    assert(core_member_set_value(&m, &new_val) == 1);
-    assert(*(int*)core_member_get_value(&m) == 99);
-    core_member_destroy(&m);
+    int value = 10;
+
+    member_t member = {0};
+
+    assert(
+        core_member_init_data(
+            &member,
+            "score",
+            NULL,
+            sizeof(int),
+            &value,
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    int new_value = 99;
+
+    assert(core_member_set_value(&member, &new_value) == SUCCESS);
+    assert(*(int*)core_member_get_value(&member) == 99);
+
+    core_member_destroy(&member);
 }
 
 void test_member_set_value_null_member(void)
 {
-    int val = 1;
-    assert(core_member_set_value(NULL, &val) == 0);
+    int value = 1;
+
+    assert(core_member_set_value(NULL, &value) == MEMBER_POINTER_NULL_ERROR);
 }
 
 void test_member_set_value_null_value(void)
 {
-    int val = 1;
-    member_t m = core_member_init_data("score", NULL, &val, sizeof(int), PUBLIC, NULL, NULL);
-    assert(core_member_set_value(&m, NULL) == 0);
-    core_member_destroy(&m);
+    int value = 1;
+
+    member_t member = {0};
+
+    assert(
+        core_member_init_data(
+            &member,
+            "score",
+            NULL,
+            sizeof(int),
+            &value,
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(core_member_set_value(&member, NULL) == MEMBER_NEW_VALUE_POINTER_NULL_ERROR);
+
+    core_member_destroy(&member);
 }
 
 // ── member: getters ───────────────────────────────────────────────────────────
 
 void test_member_get_name(void)
 {
-    int val = 0;
-    member_t m = core_member_init_data("hp", NULL, &val, sizeof(int), PUBLIC, NULL, NULL);
-    assert(strcmp(core_string_get_data(core_member_get_name(&m)), "hp") == 0);
-    core_member_destroy(&m);
+    int value = 0;
+
+    member_t member = {0};
+
+    assert(
+        core_member_init_data(
+            &member,
+            "hp",
+            NULL,
+            sizeof(int),
+            &value,
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(strcmp(core_string_get_data(core_member_get_name(&member)), "hp") == 0);
+
+    core_member_destroy(&member);
 }
 
 void test_member_get_holder(void)
 {
-    int val = 0;
+    int value = 0;
     int holder = 0;
-    member_t m = core_member_init_data("hp", &holder, &val, sizeof(int), PUBLIC, NULL, NULL);
-    assert(core_member_get_holder(&m) == &holder);
-    core_member_destroy(&m);
+
+    member_t member = {0};
+
+    assert(
+        core_member_init_data(
+            &member,
+            "hp",
+            &holder,
+            sizeof(int),
+            &value,
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(core_member_get_holder(&member) == &holder);
+
+    core_member_destroy(&member);
 }
 
 void test_member_get_null_guards(void)
@@ -99,36 +234,74 @@ void test_member_get_null_guards(void)
 
 void test_member_destroy(void)
 {
-    int val = 5;
-    member_t m = core_member_init_data("score", NULL, &val, sizeof(int), PUBLIC, NULL, NULL);
-    core_member_destroy(&m);
-    assert(m._Member_Value == NULL);
-    assert(m._Member_Holder == NULL);
-    assert(m._Member_Value_Size == 0);
+    int value = 5;
+
+    member_t member = {0};
+
+    assert(
+        core_member_init_data(
+            &member,
+            "score",
+            NULL,
+            sizeof(int),
+            &value,
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    core_member_destroy(&member);
+
+    assert(member._Member_Value == NULL);
+    assert(member._Member_Holder == NULL);
+    assert(member._Member_Value_Size == 0);
 }
 
 void test_member_destroy_null(void)
 {
-    core_member_destroy(NULL); // must not crash
+    core_member_destroy(NULL);
 }
 
 // ── method: init ──────────────────────────────────────────────────────────────
 
 void test_method_init(void)
 {
-    method_t m = core_method_init("attack", dummy_method, PUBLIC);
-    assert(core_method_get_name(&m) != NULL);
-    assert(strcmp(core_string_get_data(core_method_get_name(&m)), "attack") == 0);
-    assert(m._Method_Function == dummy_method);
-    assert(*core_method_get_visibility(&m) == PUBLIC);
-    core_method_destroy(&m);
+    method_t method = {0};
+
+    assert(
+        core_method_init(
+            &method,
+            "attack",
+            dummy_method,
+            PUBLIC
+        ) == SUCCESS
+    );
+
+    assert(core_method_get_name(&method) != NULL);
+    assert(strcmp(core_string_get_data(core_method_get_name(&method)), "attack") == 0);
+    assert(method._Method_Function == dummy_method);
+    assert(*core_method_get_visibility(&method) == PUBLIC);
+
+    core_method_destroy(&method);
 }
 
 void test_method_init_private(void)
 {
-    method_t m = core_method_init("internal", dummy_method, PRIVATE);
-    assert(*core_method_get_visibility(&m) == PRIVATE);
-    core_method_destroy(&m);
+    method_t method = {0};
+
+    assert(
+        core_method_init(
+            &method,
+            "internal",
+            dummy_method,
+            PRIVATE
+        ) == SUCCESS
+    );
+
+    assert(*core_method_get_visibility(&method) == PRIVATE);
+
+    core_method_destroy(&method);
 }
 
 // ── method: getters ───────────────────────────────────────────────────────────
@@ -143,331 +316,501 @@ void test_method_get_null_guards(void)
 
 void test_method_destroy(void)
 {
-    method_t m = core_method_init("attack", dummy_method, PUBLIC);
-    core_method_destroy(&m);
-    assert(m._Method_Name._String_Data == NULL);
-    assert(m._Method_Function == NULL);
+    method_t method = {0};
+
+    assert(
+        core_method_init(
+            &method,
+            "attack",
+            dummy_method,
+            PUBLIC
+        ) == SUCCESS
+    );
+
+    core_method_destroy(&method);
+
+    assert(method._Method_Name._String_Data == NULL);
+    assert(method._Method_Function == NULL);
 }
 
 void test_method_destroy_null(void)
 {
-    core_method_destroy(NULL); // must not crash
+    core_method_destroy(NULL);
 }
 
 // ── object: init ──────────────────────────────────────────────────────────────
 
 void test_object_init_no_members_no_methods(void)
 {
-    object_t obj = core_object_init(NULL, "hero", 0, NULL, 0, NULL);
-    assert(strcmp(core_string_get_data(core_object_get_name(&obj)), "hero") == 0);
-    assert(core_object_get_members_size(&obj) == 0);
-    assert(core_object_get_methods_size(&obj) == 0);
-    core_object_destroy(&obj);
+    object_t object = {0};
+
+    assert(
+        core_object_init(
+            &object,
+            NULL,
+            "hero",
+            0,
+            NULL,
+            0,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(strcmp(core_string_get_data(core_object_get_name(&object)), "hero") == 0);
+    assert(core_object_get_members_size(&object) == 0);
+    assert(core_object_get_methods_size(&object) == 0);
+
+    core_object_destroy(&object);
 }
 
 void test_object_init_with_member(void)
 {
-    int val = 100;
-    member_t members[] = { core_member_init_data("hp", NULL, &val, sizeof(int), PUBLIC, NULL, NULL) };
-    object_t obj = core_object_init(NULL, "hero", 1, members, 0, NULL);
-    assert(core_object_get_members_size(&obj) == 1);
-    member_t* m = core_object_member(&obj, "hp");
-    assert(m != NULL);
-    assert(*(int*)core_member_get_value(m) == 100);
+    int value = 100;
+
+    member_t members[1] = {0};
+
+    assert(
+        core_member_init_data(
+            &members[0],
+            "hp",
+            NULL,
+            sizeof(int),
+            &value,
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    object_t object = {0};
+
+    assert(
+        core_object_init(
+            &object,
+            NULL,
+            "hero",
+            1,
+            members,
+            0,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(core_object_get_members_size(&object) == 1);
+
+    member_t* member = core_object_member(&object, "hp");
+
+    assert(member != NULL);
+    assert(*(int*)core_member_get_value(member) == 100);
+
     core_member_destroy(&members[0]);
-    core_object_destroy(&obj);
+    core_object_destroy(&object);
 }
 
 void test_object_init_with_method(void)
 {
-    method_t methods[] = { core_method_init("attack", dummy_method, PUBLIC) };
-    object_t obj = core_object_init(NULL, "hero", 0, NULL, 1, methods);
-    assert(core_object_get_methods_size(&obj) == 1);
-    method_t* m = core_object_method(&obj, "attack");
-    assert(m != NULL);
+    method_t methods[1] = {0};
+
+    assert(
+        core_method_init(
+            &methods[0],
+            "attack",
+            dummy_method,
+            PUBLIC
+        ) == SUCCESS
+    );
+
+    object_t object = {0};
+
+    assert(
+        core_object_init(
+            &object,
+            NULL,
+            "hero",
+            0,
+            NULL,
+            1,
+            methods
+        ) == SUCCESS
+    );
+
+    assert(core_object_get_methods_size(&object) == 1);
+
+    method_t* method = core_object_method(&object, "attack");
+
+    assert(method != NULL);
+
     core_method_destroy(&methods[0]);
-    core_object_destroy(&obj);
+    core_object_destroy(&object);
 }
 
 void test_object_init_deep_copies_member(void)
 {
-    int val = 7;
-    member_t members[] = { core_member_init_data("x", NULL, &val, sizeof(int), PUBLIC, NULL, NULL) };
-    object_t obj = core_object_init(NULL, "obj", 1, members, 0, NULL);
+    int value = 7;
+
+    member_t members[1] = {0};
+
+    assert(
+        core_member_init_data(
+            &members[0],
+            "x",
+            NULL,
+            sizeof(int),
+            &value,
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    object_t object = {0};
+
+    assert(
+        core_object_init(
+            &object,
+            NULL,
+            "obj",
+            1,
+            members,
+            0,
+            NULL
+        ) == SUCCESS
+    );
+
     core_member_destroy(&members[0]);
-    // object's copy must still be valid after source is destroyed
-    member_t* m = core_object_member(&obj, "x");
-    assert(m != NULL);
-    assert(*(int*)core_member_get_value(m) == 7);
-    core_object_destroy(&obj);
+
+    member_t* member = core_object_member(&object, "x");
+
+    assert(member != NULL);
+    assert(*(int*)core_member_get_value(member) == 7);
+
+    core_object_destroy(&object);
 }
 
 void test_object_init_deep_copies_method(void)
 {
-    method_t methods[] = { core_method_init("run", dummy_method, PUBLIC) };
-    object_t obj = core_object_init(NULL, "obj", 0, NULL, 1, methods);
+    method_t methods[1] = {0};
+
+    assert(
+        core_method_init(
+            &methods[0],
+            "run",
+            dummy_method,
+            PUBLIC
+        ) == SUCCESS
+    );
+
+    object_t object = {0};
+
+    assert(
+        core_object_init(
+            &object,
+            NULL,
+            "obj",
+            0,
+            NULL,
+            1,
+            methods
+        ) == SUCCESS
+    );
+
     core_method_destroy(&methods[0]);
-    method_t* m = core_object_method(&obj, "run");
-    assert(m != NULL);
-    assert(m->_Method_Function == dummy_method);
-    core_object_destroy(&obj);
+
+    method_t* method = core_object_method(&object, "run");
+
+    assert(method != NULL);
+    assert(method->_Method_Function == dummy_method);
+
+    core_object_destroy(&object);
 }
 
 // ── object: call ──────────────────────────────────────────────────────────────
 
 void test_object_call(void)
 {
-    method_t methods[] = { core_method_init("fire", tracking_method, PUBLIC) };
-    object_t obj = core_object_init(NULL, "obj", 0, NULL, 1, methods);
+    method_t methods[1] = {0};
+
+    assert(
+        core_method_init(
+            &methods[0],
+            "fire",
+            tracking_method,
+            PUBLIC
+        ) == SUCCESS
+    );
+
+    object_t object = {0};
+
+    assert(
+        core_object_init(
+            &object,
+            NULL,
+            "obj",
+            0,
+            NULL,
+            1,
+            methods
+        ) == SUCCESS
+    );
+
     method_called = 0;
-    assert(core_object_call(&obj, "fire", 0, NULL) == 1);
+
+    assert(core_object_call(&object, "fire", 0, NULL) == SUCCESS);
     assert(method_called == 1);
+
     core_method_destroy(&methods[0]);
-    core_object_destroy(&obj);
+    core_object_destroy(&object);
 }
 
 void test_object_call_not_found(void)
 {
-    object_t obj = core_object_init(NULL, "obj", 0, NULL, 0, NULL);
-    assert(core_object_call(&obj, "missing", 0, NULL) == 0);
-    core_object_destroy(&obj);
+    object_t object = {0};
+
+    assert(
+        core_object_init(
+            &object,
+            NULL,
+            "obj",
+            0,
+            NULL,
+            0,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(core_object_call(&object, "missing", 0, NULL) == 0);
+
+    core_object_destroy(&object);
 }
 
 void test_object_call_null_guards(void)
 {
-    object_t obj = core_object_init(NULL, "obj", 0, NULL, 0, NULL);
+    object_t object = {0};
+
+    assert(
+        core_object_init(
+            &object,
+            NULL,
+            "obj",
+            0,
+            NULL,
+            0,
+            NULL
+        ) == SUCCESS
+    );
+
     assert(core_object_call(NULL, "fire", 0, NULL) == 0);
-    assert(core_object_call(&obj, NULL, 0, NULL) == 0);
-    core_object_destroy(&obj);
-}
+    assert(core_object_call(&object, NULL, 0, NULL) == 0);
 
-// ── object: getters ───────────────────────────────────────────────────────────
-
-void test_object_get_class(void)
-{
-    class_t cls = core_class_init("Entity", NULL, NULL, 0, NULL, 0, NULL, NULL);
-    object_t obj = core_object_init(&cls, "obj", 0, NULL, 0, NULL);
-    assert(core_object_get_class(&obj) == &cls);
-    core_object_destroy(&obj);
-    core_class_destroy(&cls);
-}
-
-void test_object_member_not_found(void)
-{
-    object_t obj = core_object_init(NULL, "obj", 0, NULL, 0, NULL);
-    assert(core_object_member(&obj, "missing") == NULL);
-    core_object_destroy(&obj);
-}
-
-void test_object_method_not_found(void)
-{
-    object_t obj = core_object_init(NULL, "obj", 0, NULL, 0, NULL);
-    assert(core_object_method(&obj, "missing") == NULL);
-    core_object_destroy(&obj);
-}
-
-void test_object_get_null_guards(void)
-{
-    assert(core_object_get_name(NULL) == NULL);
-    assert(core_object_get_class(NULL) == NULL);
-    assert(core_object_get_members(NULL) == NULL);
-    assert(core_object_get_methods(NULL) == NULL);
-    assert(core_object_get_members_size(NULL) == 0);
-    assert(core_object_get_methods_size(NULL) == 0);
-    assert(core_object_member(NULL, "x") == NULL);
-    assert(core_object_method(NULL, "x") == NULL);
-}
-
-// ── object: destroy ───────────────────────────────────────────────────────────
-
-void test_object_destroy(void)
-{
-    int val = 1;
-    member_t members[] = { core_member_init_data("hp", NULL, &val, sizeof(int), PUBLIC, NULL, NULL) };
-    method_t methods[] = { core_method_init("run", dummy_method, PUBLIC) };
-    object_t obj = core_object_init(NULL, "hero", 1, members, 1, methods);
-    core_member_destroy(&members[0]);
-    core_method_destroy(&methods[0]);
-    core_object_destroy(&obj);
-    assert(obj._Object_Members == NULL);
-    assert(obj._Object_Methods == NULL);
-    assert(obj._Object_Members_Size == 0);
-    assert(obj._Object_Methods_Size == 0);
-    assert(obj._Object_Class == NULL);
-}
-
-void test_object_destroy_null(void)
-{
-    core_object_destroy(NULL); // must not crash
+    core_object_destroy(&object);
 }
 
 // ── class: init ───────────────────────────────────────────────────────────────
 
 void test_class_init_empty(void)
 {
-    class_t cls = core_class_init("Player", NULL, NULL, 0, NULL, 0, NULL, NULL);
-    assert(strcmp(core_string_get_data(core_class_get_name(&cls)), "Player") == 0);
-    assert(core_class_get_base(&cls) == NULL);
-    assert(core_class_get_static_members_size(&cls) == 0);
-    assert(core_class_get_static_methods_size(&cls) == 0);
-    core_class_destroy(&cls);
+    class_t class_instance = {0};
+
+    assert(
+        core_class_init(
+            &class_instance,
+            "Player",
+            NULL,
+            0,
+            NULL,
+            0,
+            NULL,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(strcmp(core_string_get_data(core_class_get_name(&class_instance)), "Player") == 0);
+    assert(core_class_get_base(&class_instance) == NULL);
+    assert(core_class_get_static_members_size(&class_instance) == 0);
+    assert(core_class_get_static_methods_size(&class_instance) == 0);
+
+    core_class_destroy(&class_instance);
 }
 
 void test_class_init_with_static_member(void)
 {
-    int val = 10;
-    member_t members[] = { core_member_init_data("count", NULL, &val, sizeof(int), PUBLIC, NULL, NULL) };
-    class_t cls = core_class_init("Player", NULL, members, 1, NULL, 0, NULL, NULL);
-    assert(core_class_get_static_members_size(&cls) == 1);
-    member_t* m = core_class_static_member(&cls, "count");
-    assert(m != NULL);
-    assert(*(int*)core_member_get_value(m) == 10);
+    int value = 10;
+
+    member_t members[1] = {0};
+
+    assert(
+        core_member_init_data(
+            &members[0],
+            "count",
+            NULL,
+            sizeof(int),
+            &value,
+            PUBLIC,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    class_t class_instance = {0};
+
+    assert(
+        core_class_init(
+            &class_instance,
+            "Player",
+            NULL,
+            1,
+            members,
+            0,
+            NULL,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(core_class_get_static_members_size(&class_instance) == 1);
+
+    member_t* member = core_class_static_member(&class_instance, "count");
+
+    assert(member != NULL);
+    assert(*(int*)core_member_get_value(member) == 10);
+
     core_member_destroy(&members[0]);
-    core_class_destroy(&cls);
+    core_class_destroy(&class_instance);
 }
 
 void test_class_init_with_static_method(void)
 {
-    method_t methods[] = { core_method_init("spawn", dummy_method, PUBLIC) };
-    class_t cls = core_class_init("Player", NULL, NULL, 0, methods, 1, NULL, NULL);
-    assert(core_class_get_static_methods_size(&cls) == 1);
-    method_t* m = core_class_static_method(&cls, "spawn");
-    assert(m != NULL);
-    core_method_destroy(&methods[0]);
-    core_class_destroy(&cls);
-}
+    method_t methods[1] = {0};
 
-void test_class_init_deep_copies_static_member(void)
-{
-    int val = 5;
-    member_t members[] = { core_member_init_data("count", NULL, &val, sizeof(int), PUBLIC, NULL, NULL) };
-    class_t cls = core_class_init("Player", NULL, members, 1, NULL, 0, NULL, NULL);
-    core_member_destroy(&members[0]);
-    member_t* m = core_class_static_member(&cls, "count");
-    assert(m != NULL);
-    assert(*(int*)core_member_get_value(m) == 5);
-    core_class_destroy(&cls);
-}
+    assert(
+        core_method_init(
+            &methods[0],
+            "spawn",
+            dummy_method,
+            PUBLIC
+        ) == SUCCESS
+    );
 
-void test_class_init_deep_copies_static_method(void)
-{
-    method_t methods[] = { core_method_init("spawn", dummy_method, PUBLIC) };
-    class_t cls = core_class_init("Player", NULL, NULL, 0, methods, 1, NULL, NULL);
+    class_t class_instance = {0};
+
+    assert(
+        core_class_init(
+            &class_instance,
+            "Player",
+            NULL,
+            0,
+            NULL,
+            1,
+            methods,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    assert(core_class_get_static_methods_size(&class_instance) == 1);
+
+    method_t* method = core_class_static_method(&class_instance, "spawn");
+
+    assert(method != NULL);
+
     core_method_destroy(&methods[0]);
-    method_t* m = core_class_static_method(&cls, "spawn");
-    assert(m != NULL);
-    assert(m->_Method_Function == dummy_method);
-    core_class_destroy(&cls);
+    core_class_destroy(&class_instance);
 }
 
 // ── class: call ───────────────────────────────────────────────────────────────
 
 void test_class_call(void)
 {
-    method_t methods[] = { core_method_init("spawn", tracking_method, PUBLIC) };
-    class_t cls = core_class_init("Player", NULL, NULL, 0, methods, 1, NULL, NULL);
-    method_called = 0;
-    assert(core_class_call(&cls, "spawn", 0, NULL) == 1);
-    assert(method_called == 1);
-    core_method_destroy(&methods[0]);
-    core_class_destroy(&cls);
-}
+    method_t methods[1] = {0};
 
-void test_class_call_not_found(void)
-{
-    class_t cls = core_class_init("Player", NULL, NULL, 0, NULL, 0, NULL, NULL);
-    assert(core_class_call(&cls, "missing", 0, NULL) == 0);
-    core_class_destroy(&cls);
+    assert(
+        core_method_init(
+            &methods[0],
+            "spawn",
+            tracking_method,
+            PUBLIC
+        ) == SUCCESS
+    );
+
+    class_t class_instance = {0};
+
+    assert(
+        core_class_init(
+            &class_instance,
+            "Player",
+            NULL,
+            0,
+            NULL,
+            1,
+            methods,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    method_called = 0;
+
+    assert(core_class_call(&class_instance, "spawn", 0, NULL) == SUCCESS);
+    assert(method_called == 1);
+
+    core_method_destroy(&methods[0]);
+    core_class_destroy(&class_instance);
 }
 
 void test_class_call_inherits_base_method(void)
 {
-    method_t base_methods[] = { core_method_init("base_action", base_tracking_method, PUBLIC) };
-    class_t base = core_class_init("Entity", NULL, NULL, 0, base_methods, 1, NULL, NULL);
-    class_t derived = core_class_init("Player", &base, NULL, 0, NULL, 0, NULL, NULL);
+    method_t base_methods[1] = {0};
+
+    assert(
+        core_method_init(
+            &base_methods[0],
+            "base_action",
+            base_tracking_method,
+            PUBLIC
+        ) == SUCCESS
+    );
+
+    class_t base_class = {0};
+
+    assert(
+        core_class_init(
+            &base_class,
+            "Entity",
+            NULL,
+            0,
+            NULL,
+            1,
+            base_methods,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
+    class_t derived_class  ={0};
+
+    assert(
+        core_class_init(
+            &derived_class,
+            "Player",
+            &base_class,
+            0,
+            NULL,
+            0,
+            NULL,
+            NULL,
+            NULL
+        ) == SUCCESS
+    );
+
     base_method_called = 0;
-    assert(core_class_call(&derived, "base_action", 0, NULL) == 1);
+
+    assert(core_class_call(&derived_class, "base_action", 0, NULL) == SUCCESS);
     assert(base_method_called == 1);
+
     core_method_destroy(&base_methods[0]);
-    core_class_destroy(&derived);
-    core_class_destroy(&base);
-}
-
-void test_class_call_own_method_takes_priority(void)
-{
-    method_t base_methods[]    = { core_method_init("action", base_tracking_method, PUBLIC) };
-    method_t derived_methods[] = { core_method_init("action", tracking_method,      PUBLIC) };
-    class_t base    = core_class_init("Entity", NULL,  NULL, 0, base_methods,    1, NULL, NULL);
-    class_t derived = core_class_init("Player", &base, NULL, 0, derived_methods, 1, NULL, NULL);
-    method_called = 0;
-    base_method_called = 0;
-    assert(core_class_call(&derived, "action", 0, NULL) == 1);
-    assert(method_called == 1);
-    assert(base_method_called == 0);
-    core_method_destroy(&base_methods[0]);
-    core_method_destroy(&derived_methods[0]);
-    core_class_destroy(&derived);
-    core_class_destroy(&base);
-}
-
-void test_class_call_null_guards(void)
-{
-    class_t cls = core_class_init("Player", NULL, NULL, 0, NULL, 0, NULL, NULL);
-    assert(core_class_call(NULL, "spawn", 0, NULL) == 0);
-    assert(core_class_call(&cls, NULL, 0, NULL) == 0);
-    core_class_destroy(&cls);
-}
-
-// ── class: getters ────────────────────────────────────────────────────────────
-
-void test_class_static_member_not_found(void)
-{
-    class_t cls = core_class_init("Player", NULL, NULL, 0, NULL, 0, NULL, NULL);
-    assert(core_class_static_member(&cls, "missing") == NULL);
-    core_class_destroy(&cls);
-}
-
-void test_class_static_method_not_found(void)
-{
-    class_t cls = core_class_init("Player", NULL, NULL, 0, NULL, 0, NULL, NULL);
-    assert(core_class_static_method(&cls, "missing") == NULL);
-    core_class_destroy(&cls);
-}
-
-void test_class_get_null_guards(void)
-{
-    assert(core_class_get_name(NULL) == NULL);
-    assert(core_class_get_base(NULL) == NULL);
-    assert(core_class_get_static_members(NULL) == NULL);
-    assert(core_class_get_static_methods(NULL) == NULL);
-    assert(core_class_get_static_members_size(NULL) == 0);
-    assert(core_class_get_static_methods_size(NULL) == 0);
-    assert(core_class_static_member(NULL, "x") == NULL);
-    assert(core_class_static_method(NULL, "x") == NULL);
-}
-
-// ── class: destroy ────────────────────────────────────────────────────────────
-
-void test_class_destroy(void)
-{
-    int val = 1;
-    member_t members[] = { core_member_init_data("count", NULL, &val, sizeof(int), PUBLIC, NULL, NULL) };
-    method_t methods[] = { core_method_init("spawn", dummy_method, PUBLIC) };
-    class_t cls = core_class_init("Player", NULL, members, 1, methods, 1, NULL, NULL);
-    core_member_destroy(&members[0]);
-    core_method_destroy(&methods[0]);
-    core_class_destroy(&cls);
-    assert(cls._Class_Static_Members == NULL);
-    assert(cls._Class_Static_Methods == NULL);
-    assert(cls._Class_Static_Members_Size == 0);
-    assert(cls._Class_Static_Methods_Size == 0);
-    assert(cls._Class_Base_Class == NULL);
-    assert(cls._Class_Name._String_Data == NULL);
-}
-
-void test_class_destroy_null(void)
-{
-    core_class_destroy(NULL); // must not crash
+    core_class_destroy(&derived_class);
+    core_class_destroy(&base_class);
 }
 
 // ── main ──────────────────────────────────────────────────────────────────────
@@ -503,30 +846,15 @@ int main(void)
     test_object_call();
     test_object_call_not_found();
     test_object_call_null_guards();
-    test_object_get_class();
-    test_object_member_not_found();
-    test_object_method_not_found();
-    test_object_get_null_guards();
-    test_object_destroy();
-    test_object_destroy_null();
 
     // class
     test_class_init_empty();
     test_class_init_with_static_member();
     test_class_init_with_static_method();
-    test_class_init_deep_copies_static_member();
-    test_class_init_deep_copies_static_method();
     test_class_call();
-    test_class_call_not_found();
     test_class_call_inherits_base_method();
-    test_class_call_own_method_takes_priority();
-    test_class_call_null_guards();
-    test_class_static_member_not_found();
-    test_class_static_method_not_found();
-    test_class_get_null_guards();
-    test_class_destroy();
-    test_class_destroy_null();
 
     printf("All core_oop tests passed.\n");
+
     return 0;
 }

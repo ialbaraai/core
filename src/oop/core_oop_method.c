@@ -2,11 +2,16 @@
 
 #include <string.h>
 
-method_t core_method_init(const char* name, method_function_t function, const visibility_t visibility)
+int core_method_init(method_t* method, const char* name, method_function_t function, const visibility_t visibility)
 {
-    method_t method = {._Method_Name = core_string_init_data(strlen(name) + 1, name), ._Method_Function = function, ._Method_Visibility = visibility};
+    if (!method) return METHOD_POINTER_NULL_ERROR;
+    if (method->_Method_Function) return METHOD_ALREADY_INITIALIZED_ERROR;
 
-    return method;
+    core_string_init_data(&method->_Method_Name, strlen(name) + 1, name);
+    method->_Method_Function = function;
+    method->_Method_Visibility = visibility;
+
+    return SUCCESS;
 }
 
 string_t* core_method_get_name(const method_t* method)

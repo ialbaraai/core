@@ -41,11 +41,11 @@ typedef struct FILE_STRUCT
 } file_t;
 
 // FILE INITIALIZATION
-int core_file_init(file_t* file, const char* filepath, const size_t initial_lines_size, const size_t initial_line_size); // Initialize a file struct with a filepath of `filepath`, initial file lines capacity of `initial_lines_size`, and initial line capacity of `initial_line_size`
+int core_file_init(file_t* file, const char* filepath, const size_t initial_lines_size, const size_t initial_line_size); // Initialize `file` with a filepath of `filepath`, initial file lines capacity of `initial_lines_size`, and initial line capacity of `initial_line_size`, returns `SUCCESS` on success, and `FILE_*_ERROR` on failure
 
 // FILE MANIPULATION
-int core_file_read(file_t* file); // Reading file `filepath` data into file `data` vector, returns 1 on success, and 0 on failure
-int core_file_write(const file_t* file); // Writing file `filepath` data using file `data`, returns 1 on success, and 0 on failure
+int core_file_read(file_t* file); // Reading file `filepath` data into file `data` vector, returns `SUCCESS` on success, and `FILE_*_ERROR` on failure
+int core_file_write(const file_t* file); // Writing file `filepath` data using file `data`, returns `SUCCESS` on success, and `FILE_*_ERROR` on failure
 
 // GETTERS
 string_t* core_file_get_filepath(const file_t* file); // Getter for file `filepath`, use `core_string_set(string_t* filepath, const char* new_path)` to adjust `file` filepath

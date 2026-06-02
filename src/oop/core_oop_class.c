@@ -6,40 +6,51 @@
 #include <stdlib.h>
 #include <string.h>
 
-class_t core_class_init(const char* name, const class_t* base_class, size_t static_members_size, member_t* static_members, size_t static_methods_size, method_t* static_methods, object_t(*constructor)(int argc, void** argv), void(*destructor)(object_t* object))
+int core_class_init(class_t* class, const char* name, const class_t* base_class, size_t static_members_size, member_t* static_members, size_t static_methods_size, method_t* static_methods, int(*constructor)(object_t* object, int argc, void** argv), void(*destructor)(object_t* object))
 {
-    class_t class = {._Class_Name = core_string_init_data(strlen(name) + 1, name), ._Class_Base_Class = base_class, ._Class_Static_Members_Size = static_members_size, ._Class_Static_Methods_Size = static_methods_size, .constructor = constructor, .destructor = destructor};
+    if (!class) return CLASS_POINTER_NULL_ERROR;
 
-    class._Class_Static_Members = static_members_size ? malloc(static_members_size * sizeof(member_t)) : NULL;
-    class._Class_Static_Methods = static_methods_size ? malloc(static_methods_size * sizeof(method_t)) : NULL;
+    core_string_init_data(&class->_Class_Name, strlen(name) + 1, name);
+    class->_Class_Base_Class = base_class;
+    class->_Class_Static_Members_Size = static_members_size;
+    class->_Class_Static_Methods_Size = static_methods_size;
+    class->constructor = constructor;
+    class->destructor = destructor;
 
-    if (!class._Class_Static_Members)
+    class->_Class_Static_Members = static_members_size ? malloc(static_members_size * sizeof(member_t)) : NULL;
+    class->_Class_Static_Methods = static_methods_size ? malloc(static_methods_size * sizeof(method_t)) : NULL;
+
+    if (!class->_Class_Static_Members)
     {
-        class._Class_Static_Members_Size = 0;
-        class._Class_Static_Members = NULL;
+        class->_Class_Static_Members_Size = 0;
+        class->_Class_Static_Members = NULL;
+
+        return CLASS_CANNOT_ALLOCATE_ERROR;
     }
-    if (!class._Class_Static_Methods)
+    if (!class->_Class_Static_Methods)
     {
-        class._Class_Static_Methods_Size = 0;
-        class._Class_Static_Methods = NULL;
+        class->_Class_Static_Methods_Size = 0;
+        class->_Class_Static_Methods = NULL;
+
+        return CLASS_CANNOT_ALLOCATE_ERROR;
     }
 
-    for (size_t i = 0; i < class._Class_Static_Members_Size; ++i)
+    for (size_t i = 0; i < class->_Class_Static_Members_Size; ++i)
     {
-        class._Class_Static_Members[i] = core_member_init_data(core_string_get_data(core_member_get_name(&static_members[i])), core_member_get_holder(&static_members[i]), core_member_get_value(&static_members[i]), core_member_get_value_size(&static_members[i]), *core_member_get_visibility(&static_members[i]), static_members[i]._Member_Copy_Function, static_members[i]._Member_Destroy_Function);
+        core_member_init_data(&class->_Class_Static_Members[i], core_string_get_data(core_member_get_name(&static_members[i])), core_member_get_holder(&static_members[i]), core_member_get_value_size(&static_members[i]), core_member_get_value(&static_members[i]), *core_member_get_visibility(&static_members[i]), static_members[i]._Member_Copy_Function, static_members[i]._Member_Destroy_Function);
     }
-    for (size_t i = 0; i < class._Class_Static_Methods_Size; ++i)
+    for (size_t i = 0; i < class->_Class_Static_Methods_Size; ++i)
     {
-        class._Class_Static_Methods[i] = core_method_init(core_string_get_data(core_method_get_name(&static_methods[i])), static_methods[i]._Method_Function, *core_method_get_visibility(&static_methods[i]));
+        core_method_init(&class->_Class_Static_Methods[i], core_string_get_data(core_method_get_name(&static_methods[i])), static_methods[i]._Method_Function, *core_method_get_visibility(&static_methods[i]));
     }
 
-    return class;
+    return SUCCESS;
 }
 
 int core_class_call(class_t* class, const char* method_name, int argc, void** argv)
 {
-    if (!class) return 0;
-    if (!method_name) return 0;
+    if (!class) return CLASS_POINTER_NULL_ERROR;
+    if (!method_name) return CLASS_CSTR_NULL_ERROR;
 
     if (class->_Class_Static_Methods)
     {
@@ -50,7 +61,7 @@ int core_class_call(class_t* class, const char* method_name, int argc, void** ar
                 if (class->_Class_Static_Methods[i]._Method_Function)
                     class->_Class_Static_Methods[i]._Method_Function(NULL, argc, argv);
                 
-                return 1;
+                return SUCCESS;
             }
         }
     }
@@ -65,7 +76,7 @@ int core_class_call(class_t* class, const char* method_name, int argc, void** ar
                 if (class->_Class_Base_Class->_Class_Static_Methods[i]._Method_Function)
                     class->_Class_Base_Class->_Class_Static_Methods[i]._Method_Function(NULL, argc, argv);
 
-                return 1;
+                return SUCCESS;
             }
         }
     }

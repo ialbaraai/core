@@ -3,44 +3,58 @@
 #include <stdlib.h>
 #include <string.h>
 
-member_t core_member_init(const char* name, const void* holder, const size_t value_size, const visibility_t visibility, copy_function_t copy_function, destroy_function_t destroy_function)
+int core_member_init(member_t* member, const char* name, const void* holder, const size_t value_size, const visibility_t visibility, copy_function_t copy_function, destroy_function_t destroy_function)
 {
-    member_t member = {._Member_Name = core_string_init_data(strlen(name) + 1, name), ._Member_Holder = holder, ._Member_Value_Size = value_size,._Member_Visibility = visibility,._Member_Value = malloc(value_size)};
+    if (!member) return MEMBER_POINTER_NULL_ERROR;
+    if (member->_Member_Value) return MEMBER_ALREADY_INITIALIZED_ERROR;
 
-    if (!member._Member_Value)
+    core_string_init_data(&member->_Member_Name, strlen(name) + 1, name);
+    member->_Member_Holder = holder;
+    member->_Member_Value_Size = value_size;
+    member->_Member_Visibility = visibility;
+    member->_Member_Value = malloc(value_size);
+
+    if (!member->_Member_Value)
     {
-        member._Member_Value_Size = 0;
+        member->_Member_Value_Size = 0;
+
+        return MEMBER_CANNOT_ALLOCATE_DATA_ERROR;
     }
 
-    member._Member_Copy_Function = copy_function;
-    member._Member_Destroy_Function = destroy_function;
+    member->_Member_Copy_Function = copy_function;
+    member->_Member_Destroy_Function = destroy_function;
 
-    return member;
+    return SUCCESS;
 }
-member_t core_member_init_data(const char* name, const void* holder, const void* value, const size_t value_size, const visibility_t visibility, copy_function_t copy_function, destroy_function_t destroy_function)
+int core_member_init_data(member_t* member, const char* name, const void* holder, const size_t value_size, const void* value, const visibility_t visibility, copy_function_t copy_function, destroy_function_t destroy_function)
 {
-    member_t member = core_member_init(name, holder, value_size, visibility, copy_function, destroy_function);
+    int ret = core_member_init(member, name, holder, value_size, visibility, copy_function, destroy_function);
 
-    if (member._Member_Value)
+    if (ret != SUCCESS)
     {
-        if (member._Member_Copy_Function)
+        return ret;
+    }
+
+    if (member->_Member_Value)
+    {
+        if (member->_Member_Copy_Function)
         {
-            member._Member_Copy_Function(member._Member_Value, value);
+            member->_Member_Copy_Function(member->_Member_Value, value);
         }
         else
         {
-            memcpy(member._Member_Value, value, value_size);
+            memcpy(member->_Member_Value, value, value_size);
         }
     }
 
-    return member;
+    return SUCCESS;
 }
 
 int core_member_set_value(member_t* member, const void* value)
 {
-    if (!member) return 0;
-    if (!member->_Member_Value) return 0;
-    if (!value) return 0;
+    if (!member) return MEMBER_POINTER_NULL_ERROR;
+    if (!member->_Member_Value) return MEMBER_VALUE_NULL_ERROR;
+    if (!value) return MEMBER_NEW_VALUE_POINTER_NULL_ERROR;
 
     if (member->_Member_Destroy_Function)
     {
@@ -56,7 +70,7 @@ int core_member_set_value(member_t* member, const void* value)
         memcpy(member->_Member_Value, value, member->_Member_Value_Size);
     }
 
-    return 1;
+    return SUCCESS;
 }
 
 string_t* core_member_get_name(const member_t* member)
