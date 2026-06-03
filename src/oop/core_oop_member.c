@@ -7,6 +7,7 @@ int core_member_init(member_t* member, const char* name, const void* holder, con
 {
     if (!member) return MEMBER_POINTER_NULL_ERROR;
     if (member->_Member_Value) return MEMBER_ALREADY_INITIALIZED_ERROR;
+    if (!name) return STRING_CSTR_NULL_ERROR;
 
     core_string_init_data(&member->_Member_Name, strlen(name) + 1, name);
     member->_Member_Holder = holder;

@@ -9,6 +9,7 @@
 int core_class_init(class_t* class, const char* name, const class_t* base_class, size_t static_members_size, member_t* static_members, size_t static_methods_size, method_t* static_methods, int(*constructor)(object_t* object, int argc, void** argv), void(*destructor)(object_t* object))
 {
     if (!class) return CLASS_POINTER_NULL_ERROR;
+    if (!name) return CLASS_CSTR_NULL_ERROR;
 
     core_string_init_data(&class->_Class_Name, strlen(name) + 1, name);
     class->_Class_Base_Class = base_class;

@@ -8,7 +8,8 @@
 
 int core_object_init(object_t* object, const class_t* base_class, const char* name, size_t members_size, member_t* members, size_t methods_size, method_t* methods)
 {
-    if (object) return OBJECT_POINTER_NULL_ERROR;
+    if (!object) return OBJECT_POINTER_NULL_ERROR;
+    if (!name) return OBJECT_CSTR_NULL_ERROR;
 
     object->_Object_Class = base_class;
     core_string_init_data(&object->_Object_Name, strlen(name) + 1, name);
@@ -22,15 +23,11 @@ int core_object_init(object_t* object, const class_t* base_class, const char* na
     {
         object->_Object_Members_Size = 0;
         object->_Object_Members = NULL;
-
-        return OBJECT_CANNOT_ALLOCATE_ERROR;
     }
     if (!object->_Object_Methods)
     {
         object->_Object_Methods_Size = 0;
         object->_Object_Methods = NULL;
-
-        return OBJECT_CANNOT_ALLOCATE_ERROR;
     }
 
     for (size_t i = 0; i < object->_Object_Members_Size; ++i)

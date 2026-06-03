@@ -6,6 +6,7 @@ int core_method_init(method_t* method, const char* name, method_function_t funct
 {
     if (!method) return METHOD_POINTER_NULL_ERROR;
     if (method->_Method_Function) return METHOD_ALREADY_INITIALIZED_ERROR;
+    if (!name) return STRING_CSTR_NULL_ERROR;
 
     core_string_init_data(&method->_Method_Name, strlen(name) + 1, name);
     method->_Method_Function = function;
