@@ -262,11 +262,9 @@ void core_string_input_strict(string_t* string, const size_t maximum)
 
     while (curchar != '\n' && curchar != EOF)
     {
-        core_string_append_char(string, (char)curchar);
-
-        if (core_string_get_size(string) >= maximum)
+        if (core_string_get_size(string) < maximum)
         {
-            break;
+            core_string_append_char(string, (char)curchar);
         }
 
         curchar = getchar();
