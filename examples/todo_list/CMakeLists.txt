@@ -15,7 +15,6 @@ target_include_directories(todo_app PRIVATE
     ${CORE_ROOT}/include
 )
 
-# Link libcore.a
 target_link_libraries(todo_app PRIVATE
     ${CORE_ROOT}/build/libcore.a
 )
