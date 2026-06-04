@@ -1,6 +1,6 @@
 # Todo List - core example
 
-A simple interactive command-line task manager demonstarting the `core` library's OOP syste, `string_t`, and `vector_t`.
+A simple interactive command-line task manager demonstarting the `core` library's OOP system, `string_t`, and `vector_t`.
 
 ## Folder structure
 
