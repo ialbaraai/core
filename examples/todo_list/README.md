@@ -27,7 +27,7 @@ cmake --build build
 
 ### 2. Build the example
 
-From `examples/todo_list` director:
+From `examples/todo_list` directory:
 
 ```bash
 cmake -S . -B build
@@ -56,3 +56,15 @@ Choose an option:
  - **2** - add a new task
  - **3** - find a task by name and replace it
  - **4** - quit
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
+
+---
+
+## Author
+
+**albaraa** — [@ialbaraai](https://github.com/ialbaraai)
