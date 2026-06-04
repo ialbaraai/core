@@ -58,7 +58,7 @@ void test_read_invalid_file(void)
 
     assert(core_file_init(&f, "nonexistent.txt", 16, 64) == SUCCESS);
 
-    assert(core_file_read(&f) == 0);
+    assert(core_file_read(&f) == FILE_CANNOT_OPEN_ERROR);
 
     assert(core_vector_get_size(core_file_get_lines(&f)) == 0);
 
@@ -174,7 +174,7 @@ void test_write_invalid_path(void)
 
     core_file_read(&f);
 
-    assert(core_file_write(&f) == 0);
+    assert(core_file_write(&f) == FILE_CANNOT_OPEN_ERROR);
 
     core_file_destroy(&f);
 }
@@ -256,9 +256,9 @@ void test_destroy(void)
 
 void test_null_guards(void)
 {
-    assert(core_file_read(NULL) == 0);
+    assert(core_file_read(NULL) == FILE_POINTER_NULL_ERROR);
 
-    assert(core_file_write(NULL) == 0);
+    assert(core_file_write(NULL) == FILE_POINTER_NULL_ERROR);
 
     assert(core_file_get_filepath(NULL) == NULL);
 

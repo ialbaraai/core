@@ -24,13 +24,14 @@ This produces `libcore.a` which you can link against your project.
 ### string_t
 
 ```c
-string_t s = {0}
+string_t s = {0};
 core_string_init(&s, 64);
 string_t s2 = {0};
 core_string_init_data(&s2, 64, "Hello, World!");
 core_string_append_cstr(&s, " How are you?");
 core_string_upper(&s2);
 printf("%s\n", core_string_get_data(&s));
+printf("%s\n", core_string_get_data(&s2));
 core_string_destroy(&s);
 core_string_destroy(&s2);
 ```
@@ -38,6 +39,7 @@ core_string_destroy(&s2);
 ```bash
 # Expected output:
  How are you?
+HELLO, WORLD!
 ```
 
 ### vector_t
@@ -151,13 +153,13 @@ core_method_init(&m, "Speak", speak, PUBLIC);
 // 3. Create a Class
 // core_class_init(Class pointer, Class name, Base class pointer, Number of static members, Pointer to static members, Number of static methods, Pointer to static methods, Constructor function pointer, Destructor function pointer);
 class_t c = {0};
-core_class_init(&c, "Dog", NULL, 0, NULL, 0, NULL, NULL, NULL); // Initialize a class with STATIC members & methods
+core_class_init(&c, "Dog", NULL, 0, NULL, 0, NULL, NULL, NULL); // Initialize a class with STATIC members & methods (deep-copy)
 
 // 4. Create an Object (Instance)
-// core_object_init(Object pointer, Class pointer, Object name, Number of instance members, Pointer to instance members, Number of instance methods, Pointer to instance methods); (If no class constructor method)
+// core_object_init(Object pointer, Class pointer, Object name, Number of instance object-related members, Pointer to instance object-related members, Number of instance object-related methods, Pointer to instance object-related methods); (If no class constructor method)
 // Class.constructor(Object pointer, Number of arguments, Constructor arguments); (If `Class` has constructor method, must call `Class.destructor(&Object_Name)` for destructor)
 object_t o = {0};
-core_object_init(&o, &c, "Fido", 0, NULL, 1, &m); // Initialize an object with INSTANCE members & methods
+core_object_init(&o, &c, "Fido", 0, NULL, 1, &m); // Initialize an object with INSTANCE members & methods (deep-copy)
 
 // 5. Call Method
 core_object_call(&o, "Speak", 0, NULL);

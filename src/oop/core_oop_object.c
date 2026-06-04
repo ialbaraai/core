@@ -16,18 +16,22 @@ int core_object_init(object_t* object, const class_t* base_class, const char* na
     object->_Object_Members_Size = members_size;
     object->_Object_Methods_Size = methods_size;
 
-    object->_Object_Members = malloc(members_size * sizeof(member_t));
-    object->_Object_Methods = malloc(methods_size * sizeof(method_t));
+    object->_Object_Members = members_size ? calloc(members_size, sizeof(member_t)) : NULL;
+    object->_Object_Methods = methods_size ? calloc(methods_size, sizeof(method_t)) : NULL;
 
-    if (!object->_Object_Members)
+    if (members_size && !object->_Object_Members)
     {
         object->_Object_Members_Size = 0;
         object->_Object_Members = NULL;
+
+        return OBJECT_CANNOT_ALLOCATE_ERROR;
     }
-    if (!object->_Object_Methods)
+    if (methods_size && !object->_Object_Methods)
     {
         object->_Object_Methods_Size = 0;
         object->_Object_Methods = NULL;
+
+        return OBJECT_CANNOT_ALLOCATE_ERROR;
     }
 
     for (size_t i = 0; i < object->_Object_Members_Size; ++i)
@@ -45,17 +49,19 @@ int core_object_init(object_t* object, const class_t* base_class, const char* na
 int core_object_call(object_t* object, const char* method_name, int argc, void** argv)
 {
     if (!object) return OBJECT_POINTER_NULL_ERROR;
-    if (!object->_Object_Methods) return OBJECT_METHOD_DATA_POINTER_NULL_ERROR;
     if (!method_name) return OBJECT_CSTR_NULL_ERROR;
 
-    for (size_t i = 0; i < object->_Object_Methods_Size; ++i)
+    if (object->_Object_Methods)
     {
-        if (strcmp(method_name, core_string_get_data(core_method_get_name(&object->_Object_Methods[i]))) == 0)
+        for (size_t i = 0; i < object->_Object_Methods_Size; ++i)
         {
-            if (object->_Object_Methods[i]._Method_Function)
-                object->_Object_Methods[i]._Method_Function(object, argc, argv);
-            
-            return SUCCESS;
+            if (strcmp(method_name, core_string_get_data(core_method_get_name(&object->_Object_Methods[i]))) == 0)
+            {
+                if (object->_Object_Methods[i]._Method_Function)
+                    object->_Object_Methods[i]._Method_Function(object, argc, argv);
+                
+                return SUCCESS;
+            }
         }
     }
 

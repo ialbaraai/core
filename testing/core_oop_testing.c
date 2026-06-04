@@ -599,8 +599,8 @@ void test_object_call_null_guards(void)
         ) == SUCCESS
     );
 
-    assert(core_object_call(NULL, "fire", 0, NULL) == 0);
-    assert(core_object_call(&object, NULL, 0, NULL) == 0);
+    assert(core_object_call(NULL, "fire", 0, NULL) == OBJECT_POINTER_NULL_ERROR);
+    assert(core_object_call(&object, NULL, 0, NULL) == OBJECT_CSTR_NULL_ERROR);
 
     core_object_destroy(&object);
 }

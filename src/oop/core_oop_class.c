@@ -18,17 +18,17 @@ int core_class_init(class_t* class, const char* name, const class_t* base_class,
     class->constructor = constructor;
     class->destructor = destructor;
 
-    class->_Class_Static_Members = static_members_size ? malloc(static_members_size * sizeof(member_t)) : NULL;
-    class->_Class_Static_Methods = static_methods_size ? malloc(static_methods_size * sizeof(method_t)) : NULL;
+    class->_Class_Static_Members = static_members_size ? calloc(static_members_size, sizeof(member_t)) : NULL;
+    class->_Class_Static_Methods = static_methods_size ? calloc(static_methods_size, sizeof(method_t)) : NULL;
 
-    if (!class->_Class_Static_Members)
+    if (static_members_size && !class->_Class_Static_Members)
     {
         class->_Class_Static_Members_Size = 0;
         class->_Class_Static_Members = NULL;
 
         return CLASS_CANNOT_ALLOCATE_ERROR;
     }
-    if (!class->_Class_Static_Methods)
+    if (static_methods_size && !class->_Class_Static_Methods)
     {
         class->_Class_Static_Methods_Size = 0;
         class->_Class_Static_Methods = NULL;
