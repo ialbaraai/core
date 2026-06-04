@@ -107,3 +107,25 @@ void core_file_destroy(file_t* file)
 
     file->_File_Initial_Line_Size = 0;
 }
+
+void core_file_copy_callback(void* destination, const void* source)
+{
+    if (source && destination)
+    {
+        const file_t* src = (file_t*)source;
+
+        file_t copy = {0};
+        if (core_file_init(&copy, core_string_get_data(core_file_get_filepath(src)), core_vector_get_size(core_file_get_lines(src)), core_file_get_line_size(src)))
+        {
+            core_vector_copy_callback(&copy._File_Data, core_file_get_lines(src));
+            memcpy(destination, &copy, sizeof(file_t));
+        }
+    }
+}
+void core_file_destroy_callback(void* object)
+{
+    if (object)
+    {
+        core_file_destroy((file_t*)object);
+    }
+}

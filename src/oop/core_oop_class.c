@@ -196,3 +196,23 @@ void core_class_destroy(class_t* class)
     class->_Class_Static_Members_Size = 0;
     class->_Class_Static_Methods_Size = 0;
 }
+
+void core_class_copy_callback(void* destination, const void* source)
+{
+    if (destination && source)
+    {
+        const class_t* src = (class_t*)source;
+
+        class_t copy = {0};
+        core_class_init(&copy, core_string_get_data(core_class_get_name(src)), core_class_get_base(src), core_class_get_static_members_size(src), core_class_get_static_members(src), core_class_get_static_methods_size(src), core_class_get_static_methods(src), src->constructor, src->destructor);
+
+        memcpy(destination, &copy, sizeof(class_t));
+    }
+}
+void core_class_destroy_callback(void* object)
+{
+    if (object)
+    {
+        core_class_destroy((class_t*)object);
+    }
+}

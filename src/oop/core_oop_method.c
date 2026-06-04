@@ -40,3 +40,23 @@ void core_method_destroy(method_t* method)
 
     method->_Method_Function = NULL;
 }
+
+void core_method_copy_callback(void* destination, const void* source)
+{
+    if (source && destination)
+    {
+        const method_t* src = (method_t*)source;
+
+        method_t copy = {0};
+        core_method_init(&copy, core_string_get_data(core_method_get_name(src)), src->_Method_Function, *core_method_get_visibility(src));
+        
+        memcpy(destination, &copy, sizeof(method_t));
+    }
+}
+void core_method_destroy_callback(void* object)
+{
+    if (object)
+    {
+        core_method_destroy((method_t*)object);
+    }
+}

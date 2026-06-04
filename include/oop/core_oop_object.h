@@ -73,4 +73,8 @@ size_t core_object_get_methods_size(const object_t* object); // Getter for objec
 // OBJECT DESTRUCTOR
 void core_object_destroy(object_t* object); // Free `object` allocated `members` and `methods` and `name` data and clear its content
 
+// OBJECT CALLBACKS
+void core_object_copy_callback(void* destination, const void* source); // Callback to deep-copy object from `source` to `destination`, used for `vector`/`map`/`oop` destroy function
+void core_object_destroy_callback(void* object); // Callback to `core_object_destroy(object_t* object)`, used for `vector`/`map`/`oop` destroy function
+
 #endif

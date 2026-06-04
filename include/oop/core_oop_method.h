@@ -55,4 +55,8 @@ visibility_t* core_method_get_visibility(const method_t* method); // Getter for 
 // METHOD DESTRUCTOR
 void core_method_destroy(method_t* method); // Free `member` allocated `name` data and clear its content
 
+// METHOD CALLBACKS
+void core_method_copy_callback(void* destination, const void* source); // Callback to deep-copy method from `source` to `destination`, used for `vector`/`map`/`oop` copy function
+void core_method_destroy_callback(void* object); // Callback to `core_method_destroy(method_t* method)`, used for `vector`/`map`/`oop` destroy function
+
 #endif

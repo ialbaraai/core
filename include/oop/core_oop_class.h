@@ -76,4 +76,8 @@ size_t core_class_get_static_methods_size(const class_t* class); // Getter for c
 // CLASS DESTRUCTOR
 void core_class_destroy(class_t* class); // Free `class` allocated `static members` and `static methods` and `name` data and clear its content
 
+// CLASS CALLBACKS
+void core_class_copy_callback(void* destination, const void* source); // Callback to deep-copy class from `source` to `destination`, used for `vector`/`map`/`oop` destroy function
+void core_class_destroy_callback(void* object); // Callback to `core_class_destroy(class_t* class)`, used for `vector`/`map`/`oop` destroy function
+
 #endif

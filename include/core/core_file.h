@@ -55,4 +55,8 @@ size_t core_file_get_line_size(const file_t* file); // Getter for file `line siz
 // FILE DESTRUCTOR
 void core_file_destroy(file_t* file); // Free `file` allocated `filepath` and `data` memory and clear its data
 
+// FILE CALLBACKS
+void core_file_copy_callback(void* destination, const void* source); // Callback to deep-copy file from `source` to `destination`, used for `vector`/`map`/`oop` copy function
+void core_file_destroy_callback(void* object); // Callback to `core_file_destroy(file_t* file)`, used for `vector`/`map`/`oop` destroy function
+
 #endif

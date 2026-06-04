@@ -444,7 +444,7 @@ void core_map_destroy(map_t* map)
 
 void core_map_copy_callback(void* destination, const void* source)
 {
-    if ((map_t*)source)
+    if (source && destination)
     {
         const map_t* src = (map_t*)source;
 
@@ -456,7 +456,7 @@ void core_map_copy_callback(void* destination, const void* source)
 }
 void core_map_destroy_callback(void* object)
 {
-    if ((map_t*)object)
+    if (object)
     {
         core_map_destroy((map_t*)object);
     }

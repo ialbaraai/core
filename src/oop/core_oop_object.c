@@ -179,3 +179,23 @@ void core_object_destroy(object_t* object)
     object->_Object_Members_Size = 0;
     object->_Object_Methods_Size = 0;
 }
+
+void core_object_copy_callback(void* destination, const void* source)
+{
+    if (source && destination)
+    {
+        const object_t* src = (object_t*)source;
+
+        object_t copy = {0};
+        core_object_init(&copy, src->_Object_Class, core_string_get_data(core_object_get_name(src)), core_object_get_members_size(src), core_object_get_members(src), core_object_get_methods_size(src), core_object_get_methods(src));
+
+        memcpy(destination, &copy, sizeof(object_t));
+    }
+}
+void core_object_destroy_callback(void* object)
+{
+    if (object)
+    {
+        core_object_destroy((object_t*)object);
+    }
+}

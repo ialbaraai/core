@@ -136,3 +136,23 @@ void core_member_destroy(member_t* member)
     member->_Member_Copy_Function = NULL;
     member->_Member_Destroy_Function = NULL;
 }
+
+void core_member_copy_callback(void* destination, const void* source)
+{
+    if (source && destination)
+    {
+        const member_t* src = (member_t*)source;
+
+        member_t copy = {0};
+        core_member_init_data(&copy, core_string_get_data(core_member_get_name(src)), core_member_get_holder(src), core_member_get_value_size(src), core_member_get_value(src), *core_member_get_visibility(src), src->_Member_Copy_Function, src->_Member_Destroy_Function);
+
+        memcpy(destination, &copy, sizeof(member_t));
+    }
+}
+void core_member_destroy_callback(void* object)
+{
+    if (object)
+    {
+        core_member_destroy((member_t*)object);
+    }
+}

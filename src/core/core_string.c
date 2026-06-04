@@ -390,7 +390,7 @@ void core_string_destroy(string_t* string)
 
 void core_string_copy_callback(void* destination, const void* source)
 {
-    if ((string_t*)source)
+    if (source && destination)
     {
         const string_t* src = (const string_t*)source;
 
@@ -403,14 +403,14 @@ void core_string_copy_callback(void* destination, const void* source)
 }
 void core_string_destroy_callback(void* object)
 {
-    if ((string_t*)object)
+    if (object)
     {
         core_string_destroy((string_t*)object);
     }
 }
 int core_string_compare_callback(const void* first, const void* second)
 {
-    if ((string_t*)first && (string_t*)second)
+    if (first && second)
     {
         int res = core_string_compare((string_t*)first, (string_t*)second);
 

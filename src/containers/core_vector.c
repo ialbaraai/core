@@ -278,7 +278,7 @@ void core_vector_destroy(vector_t* vector)
 
 void core_vector_copy_callback(void* destination, const void* source)
 {
-    if ((vector_t*)source)
+    if (source && destination)
     {
         const vector_t* src = (vector_t*)source;
 
@@ -291,7 +291,7 @@ void core_vector_copy_callback(void* destination, const void* source)
 }
 void core_vector_destroy_callback(void* object)
 {
-    if ((vector_t*)object)
+    if (object)
     {
         core_vector_destroy((vector_t*)object);
     }

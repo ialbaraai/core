@@ -70,4 +70,8 @@ visibility_t* core_member_get_visibility(const member_t* member); // Getter for 
 // MEMBER DESTRUCTOR
 void core_member_destroy(member_t* member); // Free `member` allocated `value` memory through `destroy_function` if assigned and clear its data
 
+// MEMBER CALLBACKS
+void core_member_copy_callback(void* destination, const void* source); // Callback to deep-copy member from `source` to `destination`, used for `vector`/`map`/`oop` copy function
+void core_member_destroy_callback(void* object);// Callback to `core_member_destroy(member_t* member)`, used for `vector`/`map`/`oop` copy function
+
 #endif
