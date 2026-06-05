@@ -65,7 +65,7 @@ Once inside a file, type line by line and press `Enter` to move to the next line
 > Hello, world!
 > This is line 2
 > ^O
-File save to "notes.txt"
+File saved to "notes.txt"
 $
 ```
 
