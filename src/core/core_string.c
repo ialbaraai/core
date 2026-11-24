@@ -252,7 +252,7 @@ int core_string_input(string_t* string)
     {
         if (core_string_append_char(string, (char)curchar) == STRING_CANNOT_ALLOCATE_DATA_ERROR)
         {
-            return;
+            return STRING_CANNOT_ALLOCATE_DATA_ERROR;
         }
         curchar = getchar();
     }
