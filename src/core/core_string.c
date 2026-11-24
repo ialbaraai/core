@@ -239,8 +239,11 @@ int core_string_append_string(string_t* string, const string_t* source)
     return SUCCESS;
 }
 
-void core_string_input(string_t* string)
+int core_string_input(string_t* string)
 {
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
+
     core_string_set(string, "");
 
     int curchar = getchar();
@@ -253,9 +256,14 @@ void core_string_input(string_t* string)
         }
         curchar = getchar();
     }
+
+    return SUCCESS;
 }
-void core_string_input_strict(string_t* string, const size_t maximum)
+int core_string_input_strict(string_t* string, const size_t maximum)
 {
+    if (!string) return STRING_POINTER_NULL_ERROR;
+    if (!string->_String_Data) return STRING_DATA_NULL_ERROR;
+
     core_string_set(string, "");
 
     int curchar = getchar();
@@ -269,6 +277,8 @@ void core_string_input_strict(string_t* string, const size_t maximum)
 
         curchar = getchar();
     }
+
+    return SUCCESS;
 }
 
 int core_string_lower(string_t* string)

@@ -440,6 +440,8 @@ void core_map_destroy(map_t* map)
 
     map->_Map_Value_Copy_Function = NULL;
     map->_Map_Value_Destroy_Function = NULL;
+
+    map->_Map_Compare_Function = NULL;
 }
 
 void core_map_copy_callback(void* destination, const void* source)

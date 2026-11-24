@@ -59,8 +59,8 @@ int core_string_append_char(string_t* string, const char character); // Appendin
 int core_string_append_cstr(string_t* string, const char* source); // Appending `source` C-style string at the end of `string` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 int core_string_append_string(string_t* string, const string_t* source); // Appending `source` content at the end of `string` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 
-void core_string_input(string_t* string); // Accepting user input into `string` content
-void core_string_input_strict(string_t* string, const size_t maximum); // Accepting user input into `string` content with a maximum length of `maximum`
+int core_string_input(string_t* string); // Accepting user input into `string` content
+int core_string_input_strict(string_t* string, const size_t maximum); // Accepting user input into `string` content with a maximum length of `maximum`
 
 int core_string_lower(string_t* string); // Lowering all characters of `string` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
 int core_string_upper(string_t* string); // Uppering all characters of `string` content, returns `SUCCESS` on success, and `STRING_*_ERROR` on failure
